@@ -1,0 +1,43 @@
+name: Pull Request Pipeline
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.8"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with Mllint
+      run: |
+        mllint . --output mllint-report.md
+    - name: Upload Mllint result
+      uses: actions/upload-artifact@v3
+      with:
+        name: mllint report
+        path: mllint-report.md
+    - name: Test with pytest
+      run: |
+        pytest
+    - name: Build model
+      run: |
+        python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
+    - name: Upload trained models
+      uses: actions/upload-artifact@v3
+      with:
+        name: Trained models
+        path: output/model_*.joblib
