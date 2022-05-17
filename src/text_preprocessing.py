@@ -3,6 +3,7 @@ Preprocess the data to be trained by the learning algorithm.
 Create files `preprocessor.joblib` and `preprocessed_data.joblib`
 """
 
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -13,6 +14,10 @@ from nltk.corpus import stopwords
 from ast import literal_eval
 from scipy import sparse as sp_sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.pipeline import make_union, make_pipeline
+from joblib import dump, load
 
 REPLACE_BY_SPACE_RE = re.compile(r'[/(){}\[\]\|@,;]')
 BAD_SYMBOLS_RE = re.compile(r'[^0-9a-z #+_]')
@@ -123,10 +128,27 @@ def main():
         [sp_sparse.csr_matrix(my_bag_of_words(text, WORDS_TO_INDEX, DICT_SIZE)) for text in X_test])
 
     X_train_tfidf, X_val_tfidf, X_test_tfidf, tfidf_vocab = tfidf_features(X_train, X_val, X_test)
-    tfidf_reversed_vocab = {i: word for word, i in tfidf_vocab.items()}
 
     # @todo Make use of preprecessor(pipeline of tfidf) of sklearn
-    # @todo save the preprocessed result using joblib
+
+    if not os.path.exists('output'):
+        os.makedirs(os.getcwd() + '/output', exist_ok=True)
+
+    dump(X_train_mybag, 'output/preprocessed_x_train_mybag.joblib')
+    dump(X_val_mybag, 'output/preprocessed_x_val_mybag.joblib')
+    dump(X_test_mybag, 'output/preprocessed_x_test_mybag.joblib')
+
+    dump(X_train_tfidf, 'output/preprocessed_x_train_tfidf.joblib')
+    dump(X_val_tfidf, 'output/preprocessed_x_val_tfidf.joblib')
+    dump(X_test_tfidf, 'output/preprocessed_x_test_tfidf.joblib')
+    dump(tfidf_vocab, 'output/tfidf_vocab.joblib')
+
+    dump(X_train, 'output/X_train.joblib')
+    dump(X_val, 'output/X_val.joblib')
+    dump(y_train, 'output/y_train.joblib')
+    dump(y_val, 'output/y_val.joblib')
+    dump(tags_counts, 'output/tags_counts.joblib')
+    dump(WORDS_TO_INDEX, 'output/WORDS_TO_INDEX.joblib')
 
 
 if __name__ == "__main__":
