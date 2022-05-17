@@ -1,6 +1,12 @@
 name: Pull Request Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
 
 jobs:
   build:
@@ -18,7 +24,20 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with Mllint
       run: |
-        mllint . --output report.md
+        mllint . --output mllint-report.md
+    - name: Upload Mllint result
+      uses: actions/upload-artifact@v3
+      with:
+        name: mllint report
+        path: mllint-report.md
     - name: Test with pytest
       run: |
         pytest
+    - name: Build model
+      run: |
+        python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
+    - name: Upload trained models
+      uses: actions/upload-artifact@v3
+      with:
+        name: Trained models
+        path: src/output/model_*.joblib
