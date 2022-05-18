@@ -27,4 +27,9 @@ Results evaluated using several classification metrics:
 - [scikit-learn](http://scikit-learn.org/stable/index.html) — a tool for data mining and data analysis.
 - [NLTK](http://www.nltk.org/) — a platform to work with natural language.
 
+## DVC
+Everything in the ```data/``` directory is tracked by DVC.
+
+
+<hr>
 Note: this sample project was originally created by @partoftheorigin
