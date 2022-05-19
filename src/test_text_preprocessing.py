@@ -1,5 +1,5 @@
 import pytest
-from text_preprocessing import my_bag_of_words, text_prepare
+from text_preprocessing import MyBOWVectorizer, TextModifier
 
 TEST_WORDS_TO_INDEX = {'hi': 0, 'you': 1, 'me': 2, 'are': 3}
 
@@ -9,7 +9,8 @@ TEST_WORDS_TO_INDEX = {'hi': 0, 'you': 1, 'me': 2, 'are': 3}
                           ('hello world', [0, 0, 0, 0]),
                           ('you and me', [0, 1, 1, 0])])
 def test_my_bag_of_words(input_str, result_vector):
-    assert my_bag_of_words(input_str, TEST_WORDS_TO_INDEX, len(TEST_WORDS_TO_INDEX)).tolist() == result_vector
+    bow_preprocessor = MyBOWVectorizer()
+    assert bow_preprocessor.my_bag_of_words(input_str, words_to_index=TEST_WORDS_TO_INDEX, dict_size=len(TEST_WORDS_TO_INDEX)).tolist() == result_vector
 
 
 @pytest.mark.parametrize('origin_description, result_description', [
@@ -17,4 +18,5 @@ def test_my_bag_of_words(input_str, result_vector):
     ("How to free c++ memory vector<int> * arr?", "free c++ memory vectorint arr"),
     ("Hello this is not a question", "hello question")])
 def test_text_prepare(origin_description, result_description):
-    assert text_prepare(origin_description) == result_description
+    text_modifier = TextModifier()
+    assert text_modifier.text_prepare(origin_description) == result_description
