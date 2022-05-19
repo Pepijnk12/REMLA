@@ -51,7 +51,7 @@ class MyBOWVectorizer(BaseEstimator, TransformerMixin):
     """
     Custom BOW Transformer
     """
-    def __init__(self, words_to_index, dict_size):
+    def __init__(self, words_to_index=[], dict_size=5000):
         self.dict_size = dict_size
         self.words_to_index = words_to_index
 
