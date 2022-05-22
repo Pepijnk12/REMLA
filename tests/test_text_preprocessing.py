@@ -1,5 +1,5 @@
 import pytest
-from text_preprocessing import MyBOWVectorizer, TextModifier
+from src.text_preprocessing import MyBOWVectorizer, TextModifier
 
 TEST_WORDS_TO_INDEX = {'hi': 0, 'you': 1, 'me': 2, 'are': 3}
 
