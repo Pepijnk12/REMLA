@@ -58,19 +58,19 @@ def print_evaluation_scores(y_val, predicted):
 
 
 def main():
-    X_train_mybag = load('output/preprocessed_x_train_mybag.joblib')
-    X_val_mybag = load('output/preprocessed_x_val_mybag.joblib')
-    X_test_mybag = load('output/preprocessed_x_test_mybag.joblib')
+    X_train_mybag = load('src/output/preprocessed_x_train_mybag.joblib')
+    X_val_mybag = load('src/output/preprocessed_x_val_mybag.joblib')
+    X_test_mybag = load('src/output/preprocessed_x_test_mybag.joblib')
 
-    X_train_tfidf = load('output/preprocessed_x_train_tfidf.joblib')
-    X_val_tfidf = load('output/preprocessed_x_val_tfidf.joblib')
-    X_test_tfidf = load('output/preprocessed_x_test_tfidf.joblib')
-    tfidf_vocab = load('output/tfidf_vocab.joblib')
+    X_train_tfidf = load('src/output/preprocessed_x_train_tfidf.joblib')
+    X_val_tfidf = load('src/output/preprocessed_x_val_tfidf.joblib')
+    X_test_tfidf = load('src/output/preprocessed_x_test_tfidf.joblib')
+    tfidf_vocab = load('src/output/tfidf_vocab.joblib')
 
-    y_train = load('output/y_train.joblib')
-    y_val = load('output/y_val.joblib')
-    tags_counts = load('output/tags_counts.joblib')
-    WORDS_TO_INDEX = load('output/WORDS_TO_INDEX.joblib')
+    y_train = load('src/output/y_train.joblib')
+    y_val = load('src/output/y_val.joblib')
+    tags_counts = load('src/output/tags_counts.joblib')
+    WORDS_TO_INDEX = load('src/output/WORDS_TO_INDEX.joblib')
 
     mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
     y_train = mlb.fit_transform(y_train)
@@ -107,7 +107,7 @@ def main():
 
     test_predictions_for_submission = '\n'.join(
         '%i\t%s' % (i, ','.join(row)) for i, row in enumerate(test_pred_inversed))
-    with open('output/test_predict_result.tsv', 'w') as test_pred_result_file:
+    with open('src/output/test_predict_result.tsv', 'w') as test_pred_result_file:
         test_pred_result_file.write(test_predictions_for_submission)
 
     tfidf_reversed_vocab = {i: word for word, i in tfidf_vocab.items()}
@@ -116,8 +116,8 @@ def main():
     print_words_for_tag(classifier_tfidf, 'c++', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
     print_words_for_tag(classifier_tfidf, 'linux', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
 
-    dump(classifier_tfidf, 'output/model_tfidf.joblib')
-    dump(classifier_mybag, 'output/model_mybag.joblib')
+    dump(classifier_tfidf, 'src/output/model_tfidf.joblib')
+    dump(classifier_mybag, 'src/output/model_mybag.joblib')
 
 
 if __name__ == "__main__":
