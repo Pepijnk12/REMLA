@@ -150,25 +150,25 @@ def main():
     X_test_tfidf = tfidf_preprocessor.transform(X_test)
 
     # Save preprocessors
-    dump(bow_preprocessor, "./models/preprocessors/bow_preprocessor.joblib")
-    dump(tfidf_preprocessor, "./models/preprocessors/tfidf_preprocessor.joblib")
+    dump(bow_preprocessor, "models/preprocessors/bow_preprocessor.joblib")
+    dump(tfidf_preprocessor, "models/preprocessors/tfidf_preprocessor.joblib")
 
     # Save preprocessed Data
-    dump(X_train_mybow, './data/processed/preprocessed_x_train_mybow.joblib')
-    dump(X_val_mybow, './data/processed/preprocessed_x_val_mybow.joblib')
+    dump(X_train_mybow, 'data/processed/preprocessed_x_train_mybow.joblib')
+    dump(X_val_mybow, 'data/processed/preprocessed_x_val_mybow.joblib')
     dump(X_test_mybow, './data/processed/preprocessed_x_test_mybow.joblib')
 
-    dump(X_train_tfidf, './data/processed/preprocessed_x_train_tfidf.joblib')
-    dump(X_val_tfidf, './data/processed/preprocessed_x_val_tfidf.joblib')
-    dump(X_test_tfidf, './data/processed/preprocessed_x_test_tfidf.joblib')
+    dump(X_train_tfidf, 'data/processed/preprocessed_x_train_tfidf.joblib')
+    dump(X_val_tfidf, 'data/processed/preprocessed_x_val_tfidf.joblib')
+    dump(X_test_tfidf, 'data/processed/preprocessed_x_test_tfidf.joblib')
 
     # Save raw data
-    dump(X_train, './data/raw/X_train.joblib')
-    dump(X_val, './data/raw/X_val.joblib')
-    dump(y_train, './data/raw/y_train.joblib')
-    dump(y_val, './data/raw/y_val.joblib')
-    dump(tags_counts, './data/raw/tags_counts.joblib')
-    dump(WORDS_TO_INDEX, './data/raw/WORDS_TO_INDEX.joblib')
+    dump(X_train, 'data/raw/X_train.joblib')
+    dump(X_val, 'data/raw/X_val.joblib')
+    dump(y_train, 'data/raw/y_train.joblib')
+    dump(y_val, 'data/raw/y_val.joblib')
+    dump(tags_counts, 'data/raw/tags_counts.joblib')
+    dump(WORDS_TO_INDEX, 'data/raw/WORDS_TO_INDEX.joblib')
 
 
 if __name__ == "__main__":
