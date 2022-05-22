@@ -1,5 +1,5 @@
 """
-Flask API of the SMS Spam detection model model.
+Flask API of the Stackoverflow Tag Prediction model.
 """
 import joblib
 from flask import Flask, jsonify, request
@@ -13,7 +13,7 @@ swagger = Swagger(app)
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    Predict whether an SMS is Spam.
+    Predict what tags are to be used for a Stackoverflow post.
     ---
     consumes:
       - application/json
