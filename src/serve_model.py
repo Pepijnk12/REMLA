@@ -4,7 +4,6 @@ Flask API of the Stackoverflow Tag Prediction model.
 import joblib
 from flask import Flask, jsonify, request
 from flasgger import Swagger
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 from text_preprocessing import text_prepare
 app = Flask(__name__)
@@ -56,5 +55,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    clf = joblib.load('output/model_tfidf.joblib')
     app.run(host="0.0.0.0", port=8080, debug=True)
