@@ -1,2 +1,5 @@
 [core]
     analytics = false
+    remote = myremote
+['remote "myremote"']
+    url = gdrive://19XYnSwu7VUkO90dx6HfCIfh0sxZAZXkf
