@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+
     - uses: actions/checkout@v3
     - name: Set up Python 3.8
       uses: actions/setup-python@v3
@@ -34,7 +35,10 @@ jobs:
       run: |
         pytest
     - name: Build model
+      env:
+        GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
+        dvc pull data
         python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
     - name: Upload trained models
       uses: actions/upload-artifact@v3
