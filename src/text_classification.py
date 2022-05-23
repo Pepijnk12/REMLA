@@ -58,19 +58,19 @@ def print_evaluation_scores(y_val, predicted):
 
 
 def main():
-    X_train_mybag = load('output/preprocessed_x_train_mybag.joblib')
-    X_val_mybag = load('output/preprocessed_x_val_mybag.joblib')
-    X_test_mybag = load('output/preprocessed_x_test_mybag.joblib')
+    X_train_mybag = load('data/processed/preprocessed_x_train_mybag.joblib')
+    X_val_mybag = load('data/processed/preprocessed_x_val_mybag.joblib')
+    X_test_mybag = load('data/processed/preprocessed_x_test_mybag.joblib')
 
-    X_train_tfidf = load('output/preprocessed_x_train_tfidf.joblib')
-    X_val_tfidf = load('output/preprocessed_x_val_tfidf.joblib')
-    X_test_tfidf = load('output/preprocessed_x_test_tfidf.joblib')
-    tfidf_vocab = load('output/tfidf_vocab.joblib')
+    X_train_tfidf = load('data/processed/preprocessed_x_train_tfidf.joblib')
+    X_val_tfidf = load('data/processed/preprocessed_x_val_tfidf.joblib')
+    X_test_tfidf = load('data/processed/preprocessed_x_test_tfidf.joblib')
+    tfidf_vocab = load('data/processed/tfidf_vocab.joblib')
 
-    y_train = load('output/y_train.joblib')
-    y_val = load('output/y_val.joblib')
-    tags_counts = load('output/tags_counts.joblib')
-    WORDS_TO_INDEX = load('output/WORDS_TO_INDEX.joblib')
+    y_train = load('data/raw/y_train.joblib')
+    y_val = load('data/raw/y_val.joblib')
+    tags_counts = load('data/raw/tags_counts.joblib')
+    WORDS_TO_INDEX = load('data/raw/WORDS_TO_INDEX.joblib')
 
     mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
     y_train = mlb.fit_transform(y_train)
@@ -94,7 +94,7 @@ def main():
     print(f'ROC AOC score: {roc_auc_score_bow}')
     print('======= Tfidf ========')
     print_evaluation_scores(y_val, y_val_predicted_labels_tfidf)
-    roc_auc_score_tfidf = roc_auc_score(y_val, y_val_predicted_scores_mybag, multi_class='ovo')
+    roc_auc_score_tfidf = roc_auc_score(y_val, y_val_predicted_scores_tfidf, multi_class='ovo')
     print(f'ROC AOC score: {roc_auc_score_tfidf}')
 
     # L2-regularization and coefficient 10 make best performance
@@ -116,9 +116,9 @@ def main():
     print_words_for_tag(classifier_tfidf, 'c++', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
     print_words_for_tag(classifier_tfidf, 'linux', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
 
-    dump(classifier_tfidf, 'output/model_tfidf.joblib')
-    dump(classifier_mybag, 'output/model_mybag.joblib')
-    dump(mlb, 'output/mlb.joblib')
+    dump(classifier_tfidf, 'models/model_tfidf.joblib')
+    dump(classifier_mybag, 'models/model_mybag.joblib')
+    dump(mlb, 'models/mlb.joblib')
 
 
 if __name__ == "__main__":
