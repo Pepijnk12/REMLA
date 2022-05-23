@@ -73,7 +73,7 @@ def tfidf_features(X_train, X_val, X_test):
     X_val = tfidf_vectorizer.transform(X_val)
     X_test = tfidf_vectorizer.transform(X_test)
 
-    return X_train, X_val, X_test, tfidf_vectorizer.vocabulary_
+    return X_train, X_val, X_test, tfidf_vectorizer
 
 
 def main():
@@ -127,7 +127,7 @@ def main():
     X_test_mybag = sp_sparse.vstack(
         [sp_sparse.csr_matrix(my_bag_of_words(text, WORDS_TO_INDEX, DICT_SIZE)) for text in X_test])
 
-    X_train_tfidf, X_val_tfidf, X_test_tfidf, tfidf_vocab = tfidf_features(X_train, X_val, X_test)
+    X_train_tfidf, X_val_tfidf, X_test_tfidf, tfidf_vectorizer = tfidf_features(X_train, X_val, X_test)
 
     # @todo Make use of preprecessor(pipeline of tfidf) of sklearn
 
@@ -141,7 +141,8 @@ def main():
     dump(X_train_tfidf, 'output/preprocessed_x_train_tfidf.joblib')
     dump(X_val_tfidf, 'output/preprocessed_x_val_tfidf.joblib')
     dump(X_test_tfidf, 'output/preprocessed_x_test_tfidf.joblib')
-    dump(tfidf_vocab, 'output/tfidf_vocab.joblib')
+    dump(tfidf_vectorizer.vocabulary_, 'output/tfidf_vocab.joblib')
+    dump(tfidf_vectorizer, 'output/tfidf_vectorizer.joblib')
 
     dump(X_train, 'output/X_train.joblib')
     dump(X_val, 'output/X_val.joblib')
