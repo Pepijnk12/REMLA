@@ -4,8 +4,8 @@ Flask API of the Stackoverflow Tag Prediction model.
 import joblib
 from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
+from joblib import load
 
-from text_preprocessing import text_prepare
 app = Flask(__name__)
 swagger = Swagger(app)
 
@@ -41,15 +41,20 @@ def predict():
     """
     input_data = request.get_json(force=True)
     post = input_data.get('post')
-    preprocessed_post = text_prepare(post)
+    
+    # Load preprocessors
+    tfidf_preprocessor = load('models/preprocessors/tfidf_preprocessor.joblib')
+    bow_preprocessor = load('models/preprocessors/bow_preprocessor.joblib')
+    
+    # Transform data
+    tfidf_processed_post = tfidf_preprocessor.transform([post])
 
-    tfidf_vectorizer = joblib.load('output/tfidf_vectorizer.joblib')
-    processed_post = tfidf_vectorizer.transform([preprocessed_post])
+    # Load model
+    model = joblib.load('models/model_tfidf.joblib')
 
-    model = joblib.load('output/model_tfidf.joblib')
-    prediction = model.predict(processed_post)
+    prediction = model.predict(tfidf_processed_post)
 
-    mlb = joblib.load('output/mlb.joblib')
+    mlb = joblib.load('models/mlb.joblib')
     tags = mlb.inverse_transform(prediction)
 
     res = {
