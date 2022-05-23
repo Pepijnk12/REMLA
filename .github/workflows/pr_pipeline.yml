@@ -38,7 +38,7 @@ jobs:
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
-        dvc remote modify myremote GDRIVE_CREDENTIALS_DATA "$GDRIVE_CREDENTIALS_DATA"
+        dvc remote modify --local myremote GDRIVE_CREDENTIALS_DATA "$GDRIVE_CREDENTIALS_DATA"
         dvc pull data
         python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
     - name: Upload trained models
