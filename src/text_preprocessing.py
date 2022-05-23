@@ -149,11 +149,19 @@ def main():
     X_val_tfidf = tfidf_preprocessor.transform(X_val)
     X_test_tfidf = tfidf_preprocessor.transform(X_test)
 
+
     # Save preprocessors
+
+    if not os.path.exists('models/preprocessors'):
+        os.makedirs(os.getcwd() + '/models/preprocessors', exist_ok=True)
+
     dump(bow_preprocessor, "models/preprocessors/bow_preprocessor.joblib")
     dump(tfidf_preprocessor, "models/preprocessors/tfidf_preprocessor.joblib")
 
     # Save preprocessed Data
+    if not os.path.exists('data/processed'):
+        os.makedirs(os.getcwd() + '/data/processed', exist_ok=True)
+
     dump(X_train_mybow, 'data/processed/preprocessed_x_train_mybow.joblib')
     dump(X_val_mybow, 'data/processed/preprocessed_x_val_mybow.joblib')
     dump(X_test_mybow, './data/processed/preprocessed_x_test_mybow.joblib')
@@ -163,6 +171,9 @@ def main():
     dump(X_test_tfidf, 'data/processed/preprocessed_x_test_tfidf.joblib')
 
     # Save raw data
+    if not os.path.exists('data/raw'):
+        os.makedirs(os.getcwd() + '/data/raw', exist_ok=True)
+        
     dump(X_train, 'data/raw/X_train.joblib')
     dump(X_val, 'data/raw/X_val.joblib')
     dump(y_train, 'data/raw/y_train.joblib')
