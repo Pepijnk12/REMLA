@@ -38,7 +38,6 @@ jobs:
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
-        dvc doctor
         dvc pull
         python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
     - name: Upload trained models
