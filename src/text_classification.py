@@ -118,6 +118,7 @@ def main():
 
     dump(classifier_tfidf, 'output/model_tfidf.joblib')
     dump(classifier_mybag, 'output/model_mybag.joblib')
+    dump(mlb, 'output/mlb.joblib')
 
 
 if __name__ == "__main__":
