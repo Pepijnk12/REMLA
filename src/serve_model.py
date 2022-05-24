@@ -48,7 +48,6 @@ def predict():
     
     # Transform data
     tfidf_processed_post = tfidf_preprocessor.transform([post])
-<<<<<<< HEAD
     bow_preprocessed_post = bow_preprocessor.transform([post])
 
     # Load model
@@ -75,16 +74,6 @@ def predict():
     # Android Eclipse How to display specific data from phpMySql database to list view	
     # ['php', 'android', 'mysql', 'json', 'eclipse']
 
-=======
-
-    # Load model
-    model = joblib.load('models/model_tfidf.joblib')
-
-    prediction = model.predict(tfidf_processed_post)
-
-    mlb = joblib.load('models/mlb.joblib')
-    tags = mlb.inverse_transform(prediction)
->>>>>>> 65406bb (refactor processing into pipelines)
 
     res = {
         "post": post,
