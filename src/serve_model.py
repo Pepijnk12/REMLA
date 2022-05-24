@@ -48,19 +48,41 @@ def predict():
     
     # Transform data
     tfidf_processed_post = tfidf_preprocessor.transform([post])
+    bow_preprocessed_post = bow_preprocessor.transform([post])
 
     # Load model
-    model = joblib.load('models/model_tfidf.joblib')
+    tfidf_model = load('models/model_tfidf.joblib')
+    bow_model = load('models/model_mybag.joblib')
 
-    prediction = model.predict(tfidf_processed_post)
+    tfidf_prediction = tfidf_model.predict(tfidf_processed_post)
+    bow_prediction = bow_model.predict(bow_preprocessed_post)
 
-    mlb = joblib.load('models/mlb.joblib')
-    tags = mlb.inverse_transform(prediction)
+    mlb = load('models/mlb.joblib')
+    tfidf_tags = mlb.inverse_transform(tfidf_prediction)
+    bow_tags = mlb.inverse_transform(bow_prediction)
+
+    # res = {
+    #     "result": tags[0],
+    #     "classifier": "tfidf",
+    #     "post": post
+    # }
+
+
+    # How to programmatically (C#) import from the Xls-XML(xls file Saved in XML Format) data in to SQL Server	
+    # ['c#', 'asp.net', '.net', 'sql-server', 'excel']
+
+    # Android Eclipse How to display specific data from phpMySql database to list view	
+    # ['php', 'android', 'mysql', 'json', 'eclipse']
+
 
     res = {
-        "result": tags[0],
-        "classifier": "tfidf",
-        "post": post
+        "post": post,
+        "tfidf_results": {
+            "predicted_tags": tfidf_tags[0]
+        },
+        "bow_results": {
+            "predicted_tags": bow_tags[0]
+        }
     }
 
     return jsonify(res)
