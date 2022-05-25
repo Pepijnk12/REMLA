@@ -20,7 +20,8 @@ class BowVectorizer(BaseEstimator, TransformerMixin):
         self.dict_size = dict_size
         self.words_to_index = words_to_index
 
-    def fit(self):
+    def fit(self, X, y=None):
+        # pylint: disable=unused-argument
         """
         Transformer needs to implement fit, returns self.
         """

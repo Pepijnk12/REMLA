@@ -23,7 +23,8 @@ class TextPreparer(BaseEstimator, TransformerMixin):
         self.BAD_SYMBOLS_RE = re.compile(r'[^0-9a-z #+_]')
         self.STOPWORDS = set(stopwords.words('english'))
 
-    def fit(self):
+    def fit(self, X, y=None):
+        # pylint: disable=unused-argument
         """
         Transformer needs to implement fit, returns self.
         """
