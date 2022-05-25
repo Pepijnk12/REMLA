@@ -62,7 +62,7 @@ def predict():
     bow_tags = mlb.inverse_transform(bow_prediction)
 
     res = {
-        "results": tfidf_tags[0],
+        "result": tfidf_tags[0],
         "classifier": "tfifd",
         "post": post,
         "tfidf_results": {
