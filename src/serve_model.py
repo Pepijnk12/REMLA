@@ -61,20 +61,6 @@ def predict():
     tfidf_tags = mlb.inverse_transform(tfidf_prediction)
     bow_tags = mlb.inverse_transform(bow_prediction)
 
-    # res = {
-    #     "result": tags[0],
-    #     "classifier": "tfidf",
-    #     "post": post
-    # }
-
-
-    # How to programmatically (C#) import from the Xls-XML(xls file Saved in XML Format) data in to SQL Server	
-    # ['c#', 'asp.net', '.net', 'sql-server', 'excel']
-
-    # Android Eclipse How to display specific data from phpMySql database to list view	
-    # ['php', 'android', 'mysql', 'json', 'eclipse']
-
-
     res = {
         "post": post,
         "tfidf_results": {
