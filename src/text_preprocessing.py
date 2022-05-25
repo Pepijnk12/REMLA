@@ -8,8 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 from joblib import dump
 import pandas as pd
-from .modules.text_preparer import TextPreparer  # pylint: disable=import-error
-from .modules.bow_vectorizer import BowVectorizer  # pylint: disable=import-error
+from modules.text_preparer import TextPreparer  # pylint: disable=import-error
+from modules.bow_vectorizer import BowVectorizer  # pylint: disable=import-error
 
 
 def read_data(filename) -> pd.DataFrame:
