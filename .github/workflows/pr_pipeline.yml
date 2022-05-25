@@ -26,6 +26,9 @@ jobs:
     - name: Lint with Mllint
       run: |
         mllint . --output mllint-report.md
+    - name: Lint with Pylint
+      run: |
+        pylint ./src
     - name: Upload Mllint result
       uses: actions/upload-artifact@v3
       with:

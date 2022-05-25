@@ -1,7 +1,6 @@
 """
 Flask API of the Stackoverflow Tag Prediction model.
 """
-import joblib
 from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from joblib import load
@@ -10,7 +9,7 @@ app = Flask(__name__)
 swagger = Swagger(app)
 
 
-@app.route('/', methods = ['GET'])
+@app.route('/', methods=['GET'])
 def search():
     """View the main frontend web page"""
     return render_template('index.html')
@@ -41,11 +40,11 @@ def predict():
     """
     input_data = request.get_json(force=True)
     post = input_data.get('post')
-    
+
     # Load preprocessors
     tfidf_preprocessor = load('models/preprocessors/tfidf_preprocessor.joblib')
     bow_preprocessor = load('models/preprocessors/bow_preprocessor.joblib')
-    
+
     # Transform data
     tfidf_processed_post = tfidf_preprocessor.transform([post])
     bow_preprocessed_post = bow_preprocessor.transform([post])

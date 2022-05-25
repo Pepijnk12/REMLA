@@ -2,22 +2,24 @@
 Preprocess the data to be trained by the learning algorithm.
 Create files `preprocessor.joblib` and `preprocessed_data.joblib`
 """
-
-import os
-import pandas as pd
-
 from ast import literal_eval
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 from joblib import dump
+import pandas as pd
+from modules.text_preparer import TextPreparer  # pylint: disable=import-error
+from modules.bow_vectorizer import BowVectorizer  # pylint: disable=import-error
 
-from modules.text_preparer import TextPreparer
-from modules.bow_vectorizer import BowVectorizer
 
 def read_data(filename) -> pd.DataFrame:
+    """
+    Read data
+    """
     data = pd.read_csv(filename, sep='\t')
     data['tags'] = data['tags'].apply(literal_eval)
     return data
+
 
 def get_words_count(X_train) -> dict:
     """
@@ -32,8 +34,9 @@ def get_words_count(X_train) -> dict:
                 words_counts[word] += 1
             else:
                 words_counts[word] = 1
-    
+
     return words_counts
+
 
 def get_tags_count(y_train) -> dict:
     """
@@ -51,16 +54,19 @@ def get_tags_count(y_train) -> dict:
 
     return tags_counts
 
+
 def create_bow_pipeline(words_to_index, dict_size) -> Pipeline:
     """
     Create bow preprocessor pipeline
     """
     bow_preprocessor = Pipeline([
         ("text_preparer", TextPreparer()),
-        ("bow_vectorizer", BowVectorizer(words_to_index=words_to_index, dict_size=dict_size))
+        ("bow_vectorizer", BowVectorizer(
+            words_to_index=words_to_index, dict_size=dict_size))
     ])
 
     return bow_preprocessor
+
 
 def create_tfidf_pipeline() -> Pipeline:
     """
@@ -68,12 +74,17 @@ def create_tfidf_pipeline() -> Pipeline:
     """
     tfidf_preprocessor = Pipeline([
         ("text_preparer", TextPreparer()),
-        ("tfidf_vectorizer", TfidfVectorizer(min_df=5, max_df=0.9, ngram_range=(1, 2), token_pattern=r'(\S+)'))
+        ("tfidf_vectorizer", TfidfVectorizer(min_df=5,
+         max_df=0.9, ngram_range=(1, 2), token_pattern=r'(\S+)'))
     ])
 
     return tfidf_preprocessor
 
+
 def main():
+    """
+    Read raw data, create preprocessor pipelines, save preprocessed data and preprecessors
+    """
     train = read_data('data/external/train.tsv')
     validation = read_data('data/external/validation.tsv')
     test = pd.read_csv('data/external/test.tsv', sep='\t')
@@ -81,16 +92,18 @@ def main():
     X_train, y_train = train['title'].values, train['tags'].values
     X_val, y_val = validation['title'].values, validation['tags'].values
     X_test = test['title'].values
-    
+
     words_counts = get_words_count(X_train)
     tags_counts = get_tags_count(y_train)
 
-    # Create bow preprocessor 
+    # Create bow preprocessor
     DICT_SIZE = 5000
-    INDEX_TO_WORDS = sorted(words_counts, key=words_counts.get, reverse=True)[:DICT_SIZE]
+    INDEX_TO_WORDS = sorted(words_counts, key=words_counts.get, reverse=True)[
+        :DICT_SIZE]
     WORDS_TO_INDEX = {word: i for i, word in enumerate(INDEX_TO_WORDS)}
 
-    bow_preprocessor = create_bow_pipeline(words_to_index=WORDS_TO_INDEX, dict_size=DICT_SIZE)
+    bow_preprocessor = create_bow_pipeline(
+        words_to_index=WORDS_TO_INDEX, dict_size=DICT_SIZE)
 
     # Create tfidf preprocessor
     tfidf_preprocessor = create_tfidf_pipeline()
@@ -99,14 +112,14 @@ def main():
     X_train_mybag = bow_preprocessor.fit_transform(X_train)
     X_val_mybag = bow_preprocessor.transform(X_val)
     X_test_mybag = bow_preprocessor.transform(X_test)
-    
+
     X_train_tfidf = tfidf_preprocessor.fit_transform(X_train)
     X_val_tfidf = tfidf_preprocessor.transform(X_val)
     X_test_tfidf = tfidf_preprocessor.transform(X_test)
 
     # Extract tfidf vectorizer vocab
     tfidf_vectorizer: TfidfVectorizer = tfidf_preprocessor['tfidf_vectorizer']
-    tfidf_vocab = tfidf_vectorizer.vocabulary_
+    tfidf_vocab = tfidf_vectorizer.vocabulary_  # pylint: disable=maybe-no-member
 
     # Save preprocessors
     if not os.path.exists('models/preprocessors'):
@@ -131,7 +144,7 @@ def main():
     # Save raw data
     if not os.path.exists('data/raw'):
         os.makedirs(os.getcwd() + '/data/raw', exist_ok=True)
-        
+
     dump(X_train, 'data/raw/X_train.joblib')
     dump(X_val, 'data/raw/X_val.joblib')
     dump(y_train, 'data/raw/y_train.joblib')
