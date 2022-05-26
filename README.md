@@ -30,6 +30,18 @@ Results evaluated using several classification metrics:
 ## DVC
 Everything in the ```data/``` directory is tracked by DVC.
 
+## Docker
+Dockerfiles are found in the docker folder. Note that the build context should be the root project folder, and not the folder the dockerfile is contained in.
+There is a base image, which is extended by a "local" version (uses local version of files for testing purposes), and a "remote" version which pulls its information from version control (todo).
+
+To build the base:
+`docker build -f docker/base/Dockerfile -t remlabase .`
+
+To build the local:
+`docker build -f docker/local/Dockerfile -t remlalocal .`
+
+To run the server, run an instance of the remlalocal image.
+``
 
 <hr>
 Note: this sample project was originally created by @partoftheorigin
