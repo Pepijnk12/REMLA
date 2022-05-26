@@ -14,14 +14,4 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip &&\
-	pip install -r requirements.txt \
-
-	COPY src src
-
-RUN python src/get_data.py &&\
-	python src/text_preprocessing.py &&\
-	python src/text_classification.py
-
-EXPOSE 8080
-
-CMD "bash"
+    pip install -r requirements.txt
