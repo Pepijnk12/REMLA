@@ -134,3 +134,4 @@ dmypy.json
 # Everything in the data folder has to be pushed with DVC
 /data
 
+output/
