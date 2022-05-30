@@ -135,7 +135,7 @@ def main():
                         tfidf_reversed_vocab)
     print_words_for_tag(classifier_tfidf, 'linux',
                         mlb.classes, tfidf_reversed_vocab)
-                        
+
     # Save models
     if not os.path.exists('models'):
         os.makedirs(os.getcwd() + '/models', exist_ok=True)

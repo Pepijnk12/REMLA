@@ -1,3 +1,6 @@
+"""
+Validates the test data set according to the schema inferred from train data
+"""
 import os
 import sys
 import tensorflow_data_validation as tfdv
