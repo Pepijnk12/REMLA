@@ -120,10 +120,12 @@ def main():
     test_predictions = classifier_tfidf.predict(X_test_tfidf)
     test_pred_inversed = mlb.inverse_transform(test_predictions)
 
-    test_predictions_for_submission = '\n'.join(
+    if not os.path.exists('output'):
+        os.makedirs(os.getcwd() + '/output', exist_ok=True)
+    test_predictions = '\n'.join(
         '%i\t%s' % (i, ','.join(row)) for i, row in enumerate(test_pred_inversed))
     with open('output/test_predict_result.tsv', 'w') as test_pred_result_file:
-        test_pred_result_file.write(test_predictions_for_submission)
+        test_pred_result_file.write(test_predictions)
 
     tfidf_reversed_vocab = {i: word for word, i in tfidf_vocab.items()}
 
