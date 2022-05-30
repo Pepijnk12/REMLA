@@ -55,4 +55,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Trained models
-        path: output/model_*.joblib
+        path: models/model_*.joblib
