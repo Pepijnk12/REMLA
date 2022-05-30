@@ -4,4 +4,12 @@ stages:
     deps:
     - src/text_preprocessing.py
     outs:
+    - data/raw
     - data/processed
+    - preprocessors
+  train:
+    cmd: python src/text_classification.py
+    deps:
+    - src/text_classification.py
+    outs:
+    - models

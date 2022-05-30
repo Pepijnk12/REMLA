@@ -1,6 +1,7 @@
 """
 Load preprocessed data and generate model
 """
+import os
 from joblib import load, dump
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
@@ -132,6 +133,10 @@ def main():
                         tfidf_reversed_vocab)
     print_words_for_tag(classifier_tfidf, 'linux',
                         mlb.classes, tfidf_reversed_vocab)
+                        
+    # Save models
+    if not os.path.exists('models'):
+        os.makedirs(os.getcwd() + '/models', exist_ok=True)
 
     dump(classifier_tfidf, 'models/model_tfidf.joblib')
     dump(classifier_mybag, 'models/model_mybag.joblib')

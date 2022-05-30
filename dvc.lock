@@ -4,10 +4,29 @@ stages:
     cmd: python src/text_preprocessing.py
     deps:
     - path: src/text_preprocessing.py
-      md5: a0d32937bbb99e4c60a2f30b5b7310b4
-      size: 5055
+      md5: 9353bd8f5bf49d64b95c597418386c2d
+      size: 5027
     outs:
     - path: data/processed
       md5: 962462feb33a0d396d0d01e03697ddc0.dir
       size: 21917945
       nfiles: 7
+    - path: data/raw
+      md5: 32134ac2a5479bdb0ed9a990fb67c4ca.dir
+      size: 12901558
+      nfiles: 6
+    - path: preprocessors
+      md5: ab207a0b0625b1cf1586c25faa4b69be.dir
+      size: 5447472
+      nfiles: 2
+  train:
+    cmd: python src/text_classification.py
+    deps:
+    - path: src/text_classification.py
+      md5: fa8e391d46cf74af64e3d943cdd40a09
+      size: 5536
+    outs:
+    - path: models
+      md5: 214dd485519def36a44a02a8562edf58.dir
+      size: 18703954
+      nfiles: 3
