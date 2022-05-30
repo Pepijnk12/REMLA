@@ -1,0 +1,13 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/text_preprocessing.py
+    deps:
+    - path: src/text_preprocessing.py
+      md5: a0d32937bbb99e4c60a2f30b5b7310b4
+      size: 5055
+    outs:
+    - path: data/processed
+      md5: 962462feb33a0d396d0d01e03697ddc0.dir
+      size: 21917945
+      nfiles: 7
