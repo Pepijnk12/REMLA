@@ -1,6 +1,6 @@
 import pytest
-from src.modules.bow_vectorizer import BowVectorizer
-from src.modules.text_preparer import TextPreparer
+from src.inference_api.modules.bow_vectorizer import BowVectorizer
+from src.inference_api.modules.text_preparer import TextPreparer
 
 TEST_WORDS_TO_INDEX = {'hi': 0, 'you': 1, 'me': 2, 'are': 3}
 

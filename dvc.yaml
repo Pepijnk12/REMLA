@@ -1,0 +1,25 @@
+stages:
+  get_data:
+    cmd: python src/inference_api/get_data.py
+    deps:
+    - src/inference_api/get_data.py
+    outs:
+    - data/external
+  data_validation:
+    cmd: python src/inference_api/validate_data.py
+    deps:
+    - src/inference_api/validate_data.py
+  preprocess:
+    cmd: python src/inference_api/text_preprocessing.py
+    deps:
+    - src/inference_api/text_preprocessing.py
+    outs:
+    - data/raw
+    - data/processed
+    - preprocessors
+  train:
+    cmd: python src/inference_api/text_classification.py
+    deps:
+    - src/inference_api/text_classification.py
+    outs:
+    - models
