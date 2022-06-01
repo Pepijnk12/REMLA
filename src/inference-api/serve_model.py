@@ -1,7 +1,7 @@
 """
 Flask API of the Stackoverflow Tag Prediction model.
 """
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from flasgger import Swagger
 from joblib import load
 
