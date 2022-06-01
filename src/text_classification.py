@@ -1,6 +1,7 @@
 """
 Load preprocessed data and generate model
 """
+import os
 from joblib import load, dump
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
@@ -119,10 +120,12 @@ def main():
     test_predictions = classifier_tfidf.predict(X_test_tfidf)
     test_pred_inversed = mlb.inverse_transform(test_predictions)
 
-    test_predictions_for_submission = '\n'.join(
+    if not os.path.exists('output'):
+        os.makedirs(os.getcwd() + '/output', exist_ok=True)
+    test_predictions = '\n'.join(
         '%i\t%s' % (i, ','.join(row)) for i, row in enumerate(test_pred_inversed))
     with open('output/test_predict_result.tsv', 'w') as test_pred_result_file:
-        test_pred_result_file.write(test_predictions_for_submission)
+        test_pred_result_file.write(test_predictions)
 
     tfidf_reversed_vocab = {i: word for word, i in tfidf_vocab.items()}
 
@@ -132,6 +135,10 @@ def main():
                         tfidf_reversed_vocab)
     print_words_for_tag(classifier_tfidf, 'linux',
                         mlb.classes, tfidf_reversed_vocab)
+
+    # Save models
+    if not os.path.exists('models'):
+        os.makedirs(os.getcwd() + '/models', exist_ok=True)
 
     dump(classifier_tfidf, 'models/model_tfidf.joblib')
     dump(classifier_mybag, 'models/model_mybag.joblib')

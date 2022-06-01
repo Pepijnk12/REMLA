@@ -38,14 +38,21 @@ jobs:
       run: |
         pytest
     - name: Build model
+      id: build_model
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
         dvc remote modify gdrive-remote gdrive_use_service_account true
         dvc pull
-        python src/get_data.py && python src/text_preprocessing.py && python src/text_classification.py
+        dvc repro
+    - name: Upload data validation results
+      uses: actions/upload-artifact@v3
+      if:  ${{ steps.build_model.outcome == 'failure' }}
+      with:
+        name: Data validation report
+        path: output/anomalies.txt
     - name: Upload trained models
       uses: actions/upload-artifact@v3
       with:
         name: Trained models
-        path: output/model_*.joblib
+        path: models/model_*.joblib

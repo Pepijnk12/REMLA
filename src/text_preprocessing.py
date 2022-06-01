@@ -122,11 +122,11 @@ def main():
     tfidf_vocab = tfidf_vectorizer.vocabulary_  # pylint: disable=maybe-no-member
 
     # Save preprocessors
-    if not os.path.exists('models/preprocessors'):
-        os.makedirs(os.getcwd() + '/models/preprocessors', exist_ok=True)
+    if not os.path.exists('preprocessors'):
+        os.makedirs(os.getcwd() + '/preprocessors', exist_ok=True)
 
-    dump(bow_preprocessor, "models/preprocessors/bow_preprocessor.joblib")
-    dump(tfidf_preprocessor, "models/preprocessors/tfidf_preprocessor.joblib")
+    dump(bow_preprocessor, "preprocessors/bow_preprocessor.joblib")
+    dump(tfidf_preprocessor, "preprocessors/tfidf_preprocessor.joblib")
 
     # Save preprocessed Data
     if not os.path.exists('data/processed'):

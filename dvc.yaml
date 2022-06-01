@@ -1,0 +1,25 @@
+stages:
+  get_data:
+    cmd: python src/get_data.py
+    deps:
+    - src/get_data.py
+    outs:
+    - data/external
+  data_validation:
+    cmd: python src/validate_data.py
+    deps:
+    - src/validate_data.py
+  preprocess:
+    cmd: python src/text_preprocessing.py
+    deps:
+    - src/text_preprocessing.py
+    outs:
+    - data/raw
+    - data/processed
+    - preprocessors
+  train:
+    cmd: python src/text_classification.py
+    deps:
+    - src/text_classification.py
+    outs:
+    - models
