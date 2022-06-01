@@ -1,5 +1,16 @@
 schema: '2.0'
 stages:
+  get_data:
+    cmd: python src/get_data.py
+    deps:
+    - path: src/get_data.py
+      md5: 465eb5fd31bc5f40d97d70f2d89689e1
+      size: 325
+    outs:
+    - path: data/external
+      md5: 3d9e62a9c241fcfcf634384a95dd4cf4.dir
+      size: 10408878
+      nfiles: 4
   preprocess:
     cmd: python src/text_preprocessing.py
     deps:
@@ -30,14 +41,3 @@ stages:
       md5: 214dd485519def36a44a02a8562edf58.dir
       size: 18703954
       nfiles: 3
-  get_data:
-    cmd: python src/get_data.py
-    deps:
-    - path: src/get_data.py
-      md5: 465eb5fd31bc5f40d97d70f2d89689e1
-      size: 325
-    outs:
-    - path: data/external
-      md5: 3d9e62a9c241fcfcf634384a95dd4cf4.dir
-      size: 10408878
-      nfiles: 4
