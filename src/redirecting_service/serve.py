@@ -9,7 +9,10 @@ swagger = Swagger(app)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    pass
+    """
+    Redirect prediction call to the inference APIs
+    """
+    return
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
