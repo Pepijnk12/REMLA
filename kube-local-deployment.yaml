@@ -1,0 +1,113 @@
+# ======== Service for the model (inference API) ========== #
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stackoverflow-tag-pred-model-depl
+  labels:
+    app: stackoverflow-tag-pred-model
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stackoverflow-tag-pred-model
+  template:
+    metadata:
+      labels:
+        app: stackoverflow-tag-pred-model
+    spec:
+      containers:
+      - name: stackoverflow-tag-pred-model      
+        image: pepijn/remla22 # Use our ghcr.io registry for the inference api docker image, now we dont have it yet
+        ports:
+        - containerPort: 8080 # flask service uses this       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stackoverflow-tag-pred-svc
+spec:
+  selector:
+    app: stackoverflow-tag-pred-model
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+# =========== Service for our 'frontend' (actually a web deployment) ============= #
+# I think if we are gonna use the example from the tutorial (sprint-boot). Our 'frontend' and 'redirecting' services should be combined in this service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stackoverflow-tag-pred-web-depl
+  labels:
+    app: stackoverflow-tag-pred-web
+spec:
+  replicas: 1 # could be more for stableness
+  selector:
+    matchLabels:
+      app: stackoverflow-tag-pred-web
+  template:
+    metadata:
+      labels:
+        app: stackoverflow-tag-pred-web
+    spec:
+      containers:
+      - name: stackoverflow-tag-pred-web    
+        image: pepijn/remla22-web:0.0.1 # Use our ghcr.io registry for the a built web image, now we dont have it yet
+        ports:
+        - containerPort: 8080
+        env:
+          # Used in the srpint-boot my-web example, we should put env variables by referring from configMaps here
+          - name: MODEL_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: my-config
+                key: model.host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stackoverflow-tag-web-svc
+  labels:
+    app: stackoverflow-tag-web-svc
+spec:
+  selector:
+    app: stackoverflow-tag-web
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mymonitor
+  labels:
+    # Use helm to install kube-prometheus-stack with name promstack (which contains grafana already)
+    release: pomstack # prometheus
+spec: # sepcify which services to monitor
+  selector:
+    matchLabels:
+      app: stackoverflow-tag-web-svc
+  endpoints:
+  - targetPort: 8080
+    path: "/metrics"
+    interval: 1s
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  defaultBackend:
+    service:
+      name: stackoverflow-tag-web-svc
+      port:
+        number: 8080
+---
+# ============== ConfigMaps ============= #
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+data:
+  # This has to be the same as the service name and the port
+  model.host: "http://stackoverflow-tag-pred-model-svc:8080"
