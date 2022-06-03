@@ -21,34 +21,15 @@ jobs:
           echo "version_minor=$MINOR" >> $GITHUB_ENV
           echo "version_patch=$PATCH" >> $GITHUB_ENV
       - name: Login to registry
-        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Set up Python 3.8
-      uses: actions/setup-python@v3
-      with:
-       python-version: "3.8"
-       - name: Install dependencies
-       run: |
-         python -m pip install --upgrade pip
-         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Retrieve DVC data
-        id: build_model
-        env:
-          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-        run: |
-          dvc remote modify gdrive-remote gdrive_use_service_account true
-          dvc pull
-          dvc repro
-
+        run: echo "${{ secrets.PAC_IMAGE_DEPLOYMENT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build and push
         run: |
-          IMG=ghcr.io/remla-inference-api
+          IMG=ghcr.io/pepijnk12/remla
           docker build \
             -f docker/inference-api/Dockerfile \
-            -t ${IMG}:latest \
-            -t ${IMG}:${{ env.version_major }}-latest \
-            -t ${IMG}:${{ env.version_major }}.${{ env.version_minor }}-latest \
-            -t ${IMG}:${{ env.version }} \
+            -t ${IMG}:inference-api-latest \
+            -t ${IMG}:inference-api-${{ env.version_major }}-latest \
+            -t ${IMG}:inference-api-${{ env.version_major }}.${{ env.version_minor }}-latest \
+            -t ${IMG}:inference-api-${{ env.version }} \
             .
           docker push --all-tags $IMG
