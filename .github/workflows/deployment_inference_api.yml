@@ -2,7 +2,8 @@ name: Deploy the docker image and the trained model
 
 on:
   release:
-    types: [released]
+    types:
+      - created
 
 jobs:
   build:
