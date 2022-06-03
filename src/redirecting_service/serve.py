@@ -1,7 +1,7 @@
 """
 Flask API for the redirection service.
 """
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flasgger import Swagger
 
 app = Flask(__name__)
@@ -28,9 +28,8 @@ def set_active_model():
     """
     Sets the current active model
     """
-    input_data = request.get_json(force=True)
-    model = input_data.get('model')
-    # TODO: set model
+    # input_data = request.get_json(force=True)
+    # model = input_data.get('model')
     return jsonify(success=True)
 
 if __name__ == '__main__':
