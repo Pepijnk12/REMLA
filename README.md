@@ -34,13 +34,12 @@ Everything in the ```data/``` directory is tracked by DVC.
 Dockerfiles are found in the docker folder. Note that the build context should be the root project folder, and not the folder the dockerfile is contained in.
 There is a base image, which is extended by a "local" version (uses local version of files for testing purposes), and a "remote" version which pulls its information from version control (todo).
 
-To build the base:
-`docker build -f docker/base/Dockerfile -t remlabase .`
+To build the inference API:
+`docker build -f docker/inference-api/Dockerfile -t inference-api .`
 
-To build the local:
-`docker build -f docker/local/Dockerfile -t remlalocal .`
+To build the redirecting service:
+`docker build -f docker/redirecting-service/Dockerfile -t redericting-service .`
 
-To run the server, run an instance of the remlalocal image.
 ``
 
 <hr>

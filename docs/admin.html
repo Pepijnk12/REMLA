@@ -16,6 +16,32 @@
   </select>
 </div>
 <script>
+    function setActiveModel(value) {
+        fetch("http://localhost:8080/set-active-model", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({model: value})
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                console.log(responseData)
+            });
+    }
+
+    function getActiveModel() {
+        fetch("http://localhost:8080/active-model", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                console.log(responseData)
+            });
+    }
+
+    getActiveModel()
+</script>
+<script>
 </script>
 </body>
 </html>

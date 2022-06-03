@@ -26,8 +26,9 @@ jobs:
 
       - name: Build and push
         run: |
-          IMG=ghcr.io/${{ github.repository }}
+          IMG=ghcr.io/remla-redirecting-service
           docker build \
+            -f docker/redirecting-service/Dockerfile \
             -t ${IMG}:latest \
             -t ${IMG}:${{ env.version_major }}-latest \
             -t ${IMG}:${{ env.version_major }}.${{ env.version_minor }}-latest \

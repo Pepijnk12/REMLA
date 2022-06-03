@@ -2,7 +2,7 @@ FROM python:3.8.13-slim
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends git \
-	&& apt-get install -y gcc \
+	&& apt-get install -y gcc g++\
 	&& apt-get purge -y --auto-remove \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -19,12 +19,13 @@ RUN python -m pip install --upgrade pip &&\
 COPY src/inference_api src
 COPY data data
 
-#RUN python src/text_preprocessing.py &&\
-#	python src/text_classification.py
+RUN python src/text_preprocessing.py &&\
+	python src/text_classification.py
 
 # TODO use dvc repro
-COPY dvc.yaml .
-RUN dvc repro
+#COPY dvc.yaml .
+#COPY .dvc .
+#RUN dvc repro
 
 EXPOSE 8080
 ENTRYPOINT ["python", "src/serve_model.py"]
