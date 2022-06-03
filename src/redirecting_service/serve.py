@@ -17,7 +17,7 @@ def predict():
 @app.route('/active-model', methods=['GET'])
 def get_active_model():
     """
-    Returns the current model that is aactive
+    Returns the current model that is active
     """
     return jsonify({
         "activeModel": "A"
