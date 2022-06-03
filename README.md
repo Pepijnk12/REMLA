@@ -37,7 +37,7 @@ To build the inference API:
 `docker build -f docker/inference-api/Dockerfile -t inference-api .`
 
 To build the redirecting service:
-`docker build -f docker/redirecting-service/Dockerfile -t redericting-service .`
+`docker build -f docker/redirecting-service/Dockerfile -t redirecting-service .`
 
 ``
 
