@@ -1,8 +1,8 @@
 name: Deploy the docker image and the trained model
 
 on:
-  push:
-    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  release:
+    types: [released]
 
 jobs:
   build:
