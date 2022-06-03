@@ -66,12 +66,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: stackoverflow-tag-web-svc
+  name: stackoverflow-tag-pred-web-svc
   labels:
-    app: stackoverflow-tag-web-svc
+    app: stackoverflow-tag-pred-web
 spec:
   selector:
-    app: stackoverflow-tag-web
+    app: stackoverflow-tag-pred-web
   ports:
     - port: 8080
       targetPort: 8080
