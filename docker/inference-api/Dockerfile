@@ -1,5 +1,7 @@
 FROM python:3.8.13-slim
 
+LABEL org.opencontainers.image.source https://github.com/pepijnk12/remla
+
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends git \
 	&& apt-get install -y gcc g++\

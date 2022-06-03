@@ -39,7 +39,5 @@ To build the inference API:
 To build the redirecting service:
 `docker build -f docker/redirecting-service/Dockerfile -t redirecting-service .`
 
-``
-
 <hr>
 Note: this sample project was originally created by @partoftheorigin
