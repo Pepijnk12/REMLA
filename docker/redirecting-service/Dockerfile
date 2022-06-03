@@ -12,6 +12,11 @@ ENV VIRTUAL_ENV=/root/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY requirements.txt .
+COPY src/redirecting_service/requirements.txt .
 RUN python -m pip install --upgrade pip &&\
     pip install -r requirements.txt
+
+COPY src/redirecting_service src
+
+EXPOSE 8080
+ENTRYPOINT ["python", "src/serve.py"]

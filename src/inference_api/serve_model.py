@@ -1,19 +1,12 @@
 """
 Flask API of the Stackoverflow Tag Prediction model.
 """
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from flasgger import Swagger
 from joblib import load
 
 app = Flask(__name__)
 swagger = Swagger(app)
-
-
-@app.route('/', methods=['GET'])
-def search():
-    """View the main frontend web page"""
-    return render_template('index.html')
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
