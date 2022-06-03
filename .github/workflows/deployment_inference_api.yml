@@ -24,12 +24,12 @@ jobs:
         run: echo "${{ secrets.PAC_IMAGE_DEPLOYMENT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build and push
         run: |
-          IMG=ghcr.io/remla-inference-api
+          IMG=ghcr.io/${{ github.repository }}
           docker build \
             -f docker/inference-api/Dockerfile \
-            -t ${IMG}:latest \
-            -t ${IMG}:${{ env.version_major }}-latest \
-            -t ${IMG}:${{ env.version_major }}.${{ env.version_minor }}-latest \
-            -t ${IMG}:${{ env.version }} \
+            -t ${IMG}:inference-api-latest \
+            -t ${IMG}:inference-api-${{ env.version_major }}-latest \
+            -t ${IMG}:inference-api-${{ env.version_major }}.${{ env.version_minor }}-latest \
+            -t ${IMG}:inference-api-${{ env.version }} \
             .
           docker push --all-tags $IMG

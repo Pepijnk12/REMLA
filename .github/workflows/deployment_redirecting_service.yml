@@ -26,12 +26,12 @@ jobs:
         run: echo "${{ secrets.PAC_IMAGE_DEPLOYMENT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build and push
         run: |
-          IMG=ghcr.io/remla-redirecting-service
+          IMG=ghcr.io/${{ github.repository }}
           docker build \
             -f docker/redirecting-service/Dockerfile \
-            -t ${IMG}:latest \
-            -t ${IMG}:${{ env.version_major }}-latest \
-            -t ${IMG}:${{ env.version_major }}.${{ env.version_minor }}-latest \
-            -t ${IMG}:${{ env.version }} \
+            -t ${IMG}:redirecting-service-latest \
+            -t ${IMG}:redirecting-service-${{ env.version_major }}-latest \
+            -t ${IMG}:redirecting-service-${{ env.version_major }}.${{ env.version_minor }}-latest \
+            -t ${IMG}:redirecting-service-${{ env.version }} \
             .
           docker push --all-tags $IMG
