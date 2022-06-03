@@ -24,9 +24,14 @@ jobs:
           echo "version_patch=$PATCH" >> $GITHUB_ENV
       - name: Login to registry
         run: echo "${{ secrets.PAC_IMAGE_DEPLOYMENT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - id: read-docker-image-identifiers
+        name: Read Docker Image Identifiers
+        run: echo ::set-env name=IMAGE_REPOSITORY::$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+
       - name: Build and push
         run: |
-          IMG=ghcr.io/${{ github.repository }}
+          IMG=ghcr.io/${{ env.IMAGE_REPOSITORY }}
           docker build \
             -f docker/redirecting-service/Dockerfile \
             -t ${IMG}:redirecting-service-latest \
