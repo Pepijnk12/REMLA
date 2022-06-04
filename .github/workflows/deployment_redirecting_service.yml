@@ -1,4 +1,4 @@
-name: Deploy the docker image and the trained model
+name: Deploy the redirecting service docker image
 
 on:
   release:

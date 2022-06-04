@@ -1,4 +1,4 @@
-name: Deploy the docker image and the trained model
+name: Deploy the inference API docker image
 
 on:
   release:
