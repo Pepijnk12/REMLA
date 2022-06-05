@@ -44,14 +44,21 @@
         </svg>
       </div>
     </div>
+  </div>
+
+  <h5 class="mt-3">Logs</h5>
+  <div id="model-logs">
 
   </div>
 
 </div>
 <script>
-    document.getElementById('loading-model-selected').style.display = "none";
-    document.getElementById('success-model-selected').style.display = "none";
-    document.getElementById('error-model-selected').style.display = "none";
+
+    function hideAllStatusElements(){
+        document.getElementById('loading-model-selected').style.display = "none";
+        document.getElementById('success-model-selected').style.display = "none";
+        document.getElementById('error-model-selected').style.display = "none";
+    }
 
 
     function setActiveModel(value) {
@@ -64,7 +71,7 @@
         })
             .then(res => res.json())
             .then(responseData => {
-                document.getElementById('loading-model-selected').style.display = "none";
+                hideAllStatusElements()
                 if (responseData.success){
                    document.getElementById('success-model-selected').style.display = "block";
                 } else {
@@ -81,10 +88,35 @@
             .then(res => res.json())
             .then(responseData => {
                 document.getElementById('model-selector').value = responseData.activeModel;
-                console.log(responseData)
             });
     }
 
+    function objToString (obj) {
+      let str = '';
+      for (const [p, val] of Object.entries(obj)) {
+          str += `${p}: ${val}<br>`;
+      }
+      return str.slice(0, str.length - 4);
+    }
+
+    function getLogs() {
+        fetch("http://0.0.0.0:8080/logs", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                if (responseData){
+                    document.getElementById('model-logs').innerHTML = responseData.map(function(item) {
+                      item['bow_results'] = objToString(item['bow_results']);
+                      item['tfidf_results'] = objToString(item['tfidf_results']);
+                      return objToString(item);
+                    }).join("<br><br>");
+                }
+            });
+    }
+    getLogs()
+    hideAllStatusElements()
     getActiveModel()
 </script>
 <script>

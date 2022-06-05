@@ -1,8 +1,7 @@
 """
 Flask API for the redirection service.
 """
-import json
-
+import datetime
 import requests
 from flask import Flask, jsonify, request
 from flasgger import Swagger
@@ -36,11 +35,19 @@ def predict():
     if not post:
         return jsonify(success=False)
 
-    # TODO make URL env variable
-    res = requests.post("http://0.0.0.0:8000/predict", json={
-        "post": post
-    })
+    # Redirect request to both inference APIs
+    if state['active_model'] == 'A':
+        res = requests.post("http://0.0.0.0:8000/predict", json={
+            "post": post
+        })
+    else:
+        res = requests.post("http://0.0.0.0:8000/predict", json={
+            "post": post
+        })
 
+    log_item = res.json()
+    log_item['timestamp'] = str(datetime.datetime.now())
+    logs.append(log_item)
     return res.json()
 
 @app.route('/active-model', methods=['GET'])
@@ -51,6 +58,14 @@ def get_active_model():
     return jsonify({
         "activeModel": state['active_model']
     })
+
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    """
+    Returns the current model that is active
+    """
+    print(logs)
+    return jsonify(logs)
 
 @app.route('/set-active-model', methods=['POST'])
 def set_active_model():
