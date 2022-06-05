@@ -32,14 +32,14 @@
         document.getElementById('loading').style.display = "block";
         document.getElementById('result').style.display = "none";
 
-        fetch("http://localhost:8080/predict", {
+        fetch("http://0.0.0.0:8080/predict", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({post: title})
         })
             .then(res => res.json())
             .then(responseData => {
-                document.getElementById('result-tags').innerHTML = responseData['result'];
+                document.getElementById('result-tags').innerHTML = responseData['result'].join(', ');
                 document.getElementById('result').style.display = "block";
                 document.getElementById('loading').style.display = "none";
             });

@@ -5,18 +5,58 @@
   <title>Admin panel</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <style>
+    .flex-horizontal {
+      display: flex;
+    }
+
+    #model-selector {
+        min-width: 150px;
+    }
+  </style>
 </head>
 
 <body>
 <div class="container pt-3">
   <label>Active model:</label>
-  <select class="form-control model-select">
-    <option selected value="A">Model A</option>
-    <option value="B">Model B</option>
-  </select>
+  <div class="flex-horizontal">
+    <div>
+      <select id="model-selector" class="form-control model-select">
+        <option value="A">Model A</option>
+        <option value="B">Model B</option>
+      </select>
+    </div>
+    <button class="btn btn-outline-secondary ml-2" type="button"
+      onclick="setActiveModel(document.getElementById('model-selector').value)">Save
+    </button>
+    <div class="ml-2">
+      <div id="loading-model-selected" class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div id="success-model-selected">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+          <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+        </svg>
+      </div>
+      <div id="error-model-selected">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 <script>
+    document.getElementById('loading-model-selected').style.display = "none";
+    document.getElementById('success-model-selected').style.display = "none";
+    document.getElementById('error-model-selected').style.display = "none";
+
+
     function setActiveModel(value) {
+        document.getElementById('loading-model-selected').style.display = "block";
+
         fetch("http://localhost:8080/set-active-model", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
@@ -24,17 +64,23 @@
         })
             .then(res => res.json())
             .then(responseData => {
-                console.log(responseData)
+                document.getElementById('loading-model-selected').style.display = "none";
+                if (responseData.success){
+                   document.getElementById('success-model-selected').style.display = "block";
+                } else {
+                   document.getElementById('error-model-selected').style.display = "block";
+                }
             });
     }
 
     function getActiveModel() {
-        fetch("http://localhost:8080/active-model", {
+        fetch("http://0.0.0.0:8080/active-model", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })
             .then(res => res.json())
             .then(responseData => {
+                document.getElementById('model-selector').value = responseData.activeModel;
                 console.log(responseData)
             });
     }

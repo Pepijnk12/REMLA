@@ -29,5 +29,5 @@ RUN python src/text_preprocessing.py &&\
 #COPY .dvc .
 #RUN dvc repro
 
-EXPOSE 8080
+EXPOSE 8000
 ENTRYPOINT ["python", "src/serve_model.py"]
