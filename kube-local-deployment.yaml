@@ -17,9 +17,9 @@ spec:
     spec:
       containers:
       - name: stackoverflow-tag-pred-model      
-        image: pepijn/remla22 # Use our ghcr.io registry for the inference api docker image, now we dont have it yet
+        image: ghcr.io/pepijnk12/remla:inference-api-latest
         ports:
-        - containerPort: 8080 # flask service uses this       
+        - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
@@ -29,8 +29,8 @@ spec:
   selector:
     app: stackoverflow-tag-pred-model
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8000
+      targetPort: 8000
 ---
 # =========== Service for our 'frontend' (actually a web deployment) ============= #
 # I think if we are gonna use the example from the tutorial (sprint-boot). Our 'frontend' and 'redirecting' services should be combined in this service.
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
       - name: stackoverflow-tag-pred-web    
-        image: pepijn/remla22-web:0.0.1 # Use our ghcr.io registry for the a built web image, now we dont have it yet
+        image: ghcr.io/pepijnk12/remla:redirecting-service-latest # Use our ghcr.io registry for the a built web image, now we dont have it yet
         ports:
         - containerPort: 8080
         env:
