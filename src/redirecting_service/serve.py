@@ -64,7 +64,6 @@ def get_logs():
     """
     Returns the current model that is active
     """
-    print(logs)
     return jsonify(logs)
 
 @app.route('/set-active-model', methods=['POST'])

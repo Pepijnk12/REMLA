@@ -43,8 +43,6 @@ def predict():
     input_data = request.get_json(force=True)
     post = input_data.get('post')
 
-    print(post)
-
     # Load preprocessors
     tfidf_preprocessor = load('preprocessors/tfidf_preprocessor.joblib')
     bow_preprocessor = load('preprocessors/bow_preprocessor.joblib')
