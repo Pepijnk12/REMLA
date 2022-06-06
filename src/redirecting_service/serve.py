@@ -35,6 +35,7 @@ def predict():
     if not post:
         return jsonify(success=False)
 
+    # TODO send request to both inference APIs but only return the output of the active model
     # Redirect request to both inference APIs
     if state['active_model'] == 'A':
         res = requests.post("http://0.0.0.0:8000/predict", json={
