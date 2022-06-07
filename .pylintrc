@@ -93,7 +93,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         consider-using-f-string,
         unspecified-encoding,
-        no-member
+        no-member,
+        similarities
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -177,9 +178,7 @@ spelling-store-unknown-words=no
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
-notes=FIXME,
-      XXX,
-      TODO
+notes=
 
 # Regular expression of note tags to take in consideration.
 #notes-rgx=

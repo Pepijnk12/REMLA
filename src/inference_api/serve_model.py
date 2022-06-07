@@ -4,9 +4,18 @@ Flask API of the Stackoverflow Tag Prediction model.
 from flask import Flask, jsonify, request
 from flasgger import Swagger
 from joblib import load
+from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app)
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
+
+@app.route('/', methods=['GET'])
+def running():
+    """
+    Test to see if running
+    """
+    return jsonify(success=True)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -35,8 +44,8 @@ def predict():
     post = input_data.get('post')
 
     # Load preprocessors
-    tfidf_preprocessor = load('models/preprocessors/tfidf_preprocessor.joblib')
-    bow_preprocessor = load('models/preprocessors/bow_preprocessor.joblib')
+    tfidf_preprocessor = load('preprocessors/tfidf_preprocessor.joblib')
+    bow_preprocessor = load('preprocessors/bow_preprocessor.joblib')
 
     # Transform data
     tfidf_processed_post = tfidf_preprocessor.transform([post])
@@ -57,16 +66,12 @@ def predict():
         "result": tfidf_tags[0],
         "classifier": "tfifd",
         "post": post,
-        "tfidf_results": {
-            "predicted_tags": tfidf_tags[0]
-        },
-        "bow_results": {
-            "predicted_tags": bow_tags[0]
-        }
+        "tfidf_results": tfidf_tags[0],
+        "bow_results": bow_tags[0]
     }
 
     return jsonify(res)
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
