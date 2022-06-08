@@ -22,7 +22,7 @@ logs = []
 @app.route('/', methods=['GET'])
 def index_page():
     """
-    Renden index page
+    Render index page
     """
     return render_template("index.html")
 
