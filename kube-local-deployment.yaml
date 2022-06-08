@@ -133,7 +133,7 @@ metadata:
 spec:
   defaultBackend:
     service:
-      name: stackoverflow-tag-web-svc
+      name: stackoverflow-tag-pred-web-svc
       port:
         number: 8080
 ---
