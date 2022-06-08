@@ -1,3 +1,10 @@
+#K8s installation instrctions for keon
+
+1. `kubectl apply -f ngninx-ingress-controller.yaml`
+2. `kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8000:80`
+3. goto: remla.localdev.me
+
+
 # Multilabel classification on Stack Overflow tags
 Predict tags for posts from StackOverflow with multilabel classification approach.
 
