@@ -82,11 +82,11 @@ metadata:
   name: mymonitor
   labels:
     # Use helm to install kube-prometheus-stack with name promstack (which contains grafana already)
-    release: pomstack # prometheus
+    release: promstack # prometheus
 spec: # sepcify which services to monitor
   selector:
     matchLabels:
-      app: stackoverflow-tag-web-svc
+      app: stackoverflow-tag-pred-web-svc
   endpoints:
   - targetPort: 8080
     path: "/metrics"
