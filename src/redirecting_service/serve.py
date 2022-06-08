@@ -3,13 +3,13 @@ Flask API for the redirection service.
 """
 import datetime
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app)
-cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
+cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:*", "http://0.0.0.0:*"]}})
 
 
 state = {
@@ -19,11 +19,18 @@ state = {
 logs = []
 
 @app.route('/', methods=['GET'])
-def running():
+def index_page():
     """
-    Test to see if running
+    Renden index page
     """
-    return jsonify(success=True)
+    return render_template("index.html")
+
+@app.route('/admin', methods=['GET'])
+def admin_view():
+    """
+    Render admin page
+    """
+    return render_template("admin.html")
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -35,7 +42,7 @@ def predict():
     if not post:
         return jsonify(success=False)
 
-    # TODO send request to both inference APIs but only return the output of the active model
+    # TODO send request to both inference API's but only return the output of the active model
     # Redirect request to both inference APIs
     if state['active_model'] == 'A':
         res = requests.post("http://0.0.0.0:8000/predict", json={
