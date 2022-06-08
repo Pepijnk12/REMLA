@@ -3,12 +3,13 @@ Flask API for the redirection service.
 """
 import datetime
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app)
+
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
 
@@ -19,11 +20,19 @@ state = {
 logs = []
 
 @app.route('/', methods=['GET'])
-def running():
+def index_page():
     """
-    Test to see if running
+    Render index page
     """
-    return jsonify(success=True)
+    return render_template("index.html")
+
+@app.route('/admin', methods=['GET'])
+def admin_view():
+    """
+    Render admin page
+    """
+    return render_template("admin.html")
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

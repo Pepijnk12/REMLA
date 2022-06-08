@@ -108,8 +108,8 @@
             .then(responseData => {
                 if (responseData){
                     document.getElementById('model-logs').innerHTML = responseData.map(function(item) {
-                      item['bow_results'] = objToString(item['bow_results']);
-                      item['tfidf_results'] = objToString(item['tfidf_results']);
+                      item['bow_results'] = item['bow_results'].join(', ');
+                      item['tfidf_results'] = item['tfidf_results'].join(', ');
                       return objToString(item);
                     }).join("<br><br>");
                 }
