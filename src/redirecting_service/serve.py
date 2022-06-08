@@ -9,7 +9,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app)
-cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:*", "http://0.0.0.0:*"]}})
+
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
 
 state = {
@@ -32,6 +33,7 @@ def admin_view():
     """
     return render_template("admin.html")
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """
@@ -42,7 +44,7 @@ def predict():
     if not post:
         return jsonify(success=False)
 
-    # TODO send request to both inference API's but only return the output of the active model
+    # TODO send request to both inference APIs but only return the output of the active model
     # Redirect request to both inference APIs
     if state['active_model'] == 'A':
         res = requests.post("http://0.0.0.0:8000/predict", json={
