@@ -1,4 +1,4 @@
-# ======== Service for the model (inference API) ========== #
+# ======== Service for the model A (inference API) ========== #
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
     app: stackoverflow-tag-pred-model
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: stackoverflow-tag-pred-model
@@ -31,6 +31,40 @@ spec:
   ports:
     - port: 8000
       targetPort: 8000
+---
+# ======== Service for the model B (inference API) ========== #
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stackoverflow-tag-pred-model-depl-b
+  labels:
+    app: stackoverflow-tag-pred-model-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stackoverflow-tag-pred-model-b
+  template:
+    metadata:
+      labels:
+        app: stackoverflow-tag-pred-model-b
+    spec:
+      containers:
+      - name: stackoverflow-tag-pred-model-b
+        image: ghcr.io/pepijnk12/remla:inference-api-latest
+        ports:
+        - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stackoverflow-tag-pred-svc
+spec:
+  selector:
+    app: stackoverflow-tag-pred-model
+  ports:
+    - port: 8001
+      targetPort: 8001
 ---
 # =========== Service for our 'frontend' (actually a web deployment) ============= #
 # I think if we are gonna use the example from the tutorial (sprint-boot). Our 'frontend' and 'redirecting' services should be combined in this service.
