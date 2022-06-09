@@ -123,8 +123,8 @@ def set_active_model():
     """
     Sets the current active model
     """
-    global logs
-    logs = []
+    global posts
+    posts = []
 
     input_data = request.get_json(force=True)
     model = input_data.get('model')
