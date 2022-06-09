@@ -10,12 +10,14 @@ app = Flask(__name__)
 swagger = Swagger(app)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
+
 @app.route('/', methods=['GET'])
 def running():
     """
     Test to see if running
     """
     return jsonify(success=True)
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
