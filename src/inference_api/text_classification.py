@@ -3,6 +3,7 @@ Load preprocessed data and generate model
 """
 import os
 from joblib import load, dump
+from numpy import average
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -66,6 +67,20 @@ def print_evaluation_scores(y_val, predicted):
     print('F1 score: ', f1_score(y_val, predicted, average='weighted'))
     print('Average precision score: ', average_precision_score(
         y_val, predicted, average='macro'))
+
+def get_evaluation_scores(y_val, predicted):
+    """
+    Return accuracy, F1, and average precision scores
+
+    Args:
+        y_val (dict): true values
+        predicted (dict): predicted values
+    """
+    acc = accuracy_score(y_val, predicted)
+    f1 = f1_score(y_val, predicted, average='weighted')
+    average_prec = average_precision_score(y_val, predicted, average='macro')
+
+    return acc, f1, average_prec
 
 
 def main():

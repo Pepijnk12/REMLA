@@ -198,6 +198,11 @@ def metrics_inactive_model():
     Returns inactive model metrics
     """
     return str(0.05)
+    log_item = res.json()
+    log_item['timestamp'] = str(datetime.datetime.now())
+    logs.append(log_item)
+
+    return res.json()
 
 
 @app.route('/active-model', methods=['GET'])
@@ -246,6 +251,20 @@ def set_active_model():
         return jsonify(success=True)
     return jsonify(success=False)
 
+
+@app.route('/metrics', methods=['GET'])
+def metrics():
+    """
+    Metrics
+    """
+    response = "# HELP num_pred Number of request predictions\n"
+    response = response.join("# TYPE num_pred counter\n")
+    response = response.join("num_pred ").join(str(len(logs))).join("\n\n")
+
+    # TODO accuracy of models
+
+    response.mimetype = "text/plain"
+    return response
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
