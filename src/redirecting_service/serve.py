@@ -14,10 +14,10 @@ cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
 
 state = {
-    "active_model": "A"
+    "active_model": "A",
 }
 
-logs = []
+posts = []
 
 @app.route('/', methods=['GET'])
 def index_page():
@@ -34,6 +34,17 @@ def admin_view():
     return render_template("admin.html")
 
 
+@app.route('/deploy-image', methods=['POST'])
+def deploy_image():
+    """
+    Deploy image to Kubernetes cluster
+    """
+    # TODO do something with image url
+    # input_data = request.get_json(force=True)
+    # image_url = input_data.get('imageUrl')
+    return jsonify(success=True)
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """
@@ -44,21 +55,39 @@ def predict():
     if not post:
         return jsonify(success=False)
 
-    # TODO send request to both inference APIs but only return the output of the active model
+    # TODO change IP address to redirect to two different inference APIs
     # Redirect request to both inference APIs
-    if state['active_model'] == 'A':
-        res = requests.post("http://0.0.0.0:8000/predict", json={
-            "post": post
-        })
-    else:
-        res = requests.post("http://0.0.0.0:8000/predict", json={
-            "post": post
-        })
+    resA = requests.post("http://0.0.0.0:8000/predict", json={
+        "post": post
+    })
+    resB = requests.post("http://0.0.0.0:8000/predict", json={
+        "post": post
+    })
 
-    log_item = res.json()
-    log_item['timestamp'] = str(datetime.datetime.now())
-    logs.append(log_item)
-    return res.json()
+    res = {
+        "A": resA.json()['result'],
+        "B": resB.json()['result'],
+        "active_model": state["active_model"]
+    }
+
+    res['timestamp'] = str(datetime.datetime.now())
+    return res
+
+@app.route('/metrics-active-model', methods=['GET'])
+def metrics_active_model():
+    """
+    Returns active model metrics
+    """
+    return str(0.05)
+
+
+@app.route('/metrics-inactive-model', methods=['GET'])
+def metrics_inactive_model():
+    """
+    Returns inactive model metrics
+    """
+    return str(0.05)
+
 
 @app.route('/active-model', methods=['GET'])
 def get_active_model():
@@ -70,17 +99,32 @@ def get_active_model():
     })
 
 @app.route('/logs', methods=['GET'])
-def get_logs():
+def get_posts():
     """
     Returns the current model that is active
     """
-    return jsonify(logs)
+    return jsonify(posts)
+
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    """
+    Returns the current model that is active
+    """
+    input_data = request.get_json(force=True)
+    user_tags = input_data.get('feedback')
+    results = input_data.get('results')
+    results['user_tags'] = user_tags
+    posts.append(results)
+    return jsonify(success=True)
 
 @app.route('/set-active-model', methods=['POST'])
 def set_active_model():
     """
     Sets the current active model
     """
+    global logs
+    logs = []
+
     input_data = request.get_json(force=True)
     model = input_data.get('model')
     if model in ['A', 'B']:

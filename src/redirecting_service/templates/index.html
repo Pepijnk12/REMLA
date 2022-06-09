@@ -21,13 +21,30 @@
     <span class="sr-only">Loading...</span>
   </div>
   <div id="result">
-    <p>Tags: <span id="result-tags"></span></p>
+    <p>Suggested tags: <span id="result-tags"></span></p>
+    <div class="mt-4">
+        <h6>Please add tags to your post (comma-seperated)</h6>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Tags" id="feedback-input">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button"
+                    onclick="sendFeedback(document.getElementById('feedback-input').value)">Post
+            </button>
+          </div>
+        </div>
+          <div id="thanks-feedback">
+            <h4>Thank you for your post!</h4>
+          </div>
+    </div>
+
   </div>
 </div>
 <script>
     document.getElementById('loading').style.display = "none";
     document.getElementById('result').style.display = "none";
+    document.getElementById('thanks-feedback').style.display = "none";
 
+    let results;
     function predict(title) {
         document.getElementById('loading').style.display = "block";
         document.getElementById('result').style.display = "none";
@@ -39,9 +56,27 @@
         })
             .then(res => res.json())
             .then(responseData => {
-                document.getElementById('result-tags').innerHTML = responseData['result'].join(', ');
+                results = responseData;
+                let activeModel = responseData['active_model']
+                document.getElementById('result-tags').innerHTML = responseData[activeModel].join(', ');
                 document.getElementById('result').style.display = "block";
                 document.getElementById('loading').style.display = "none";
+            });
+    }
+
+    function sendFeedback(feedback) {
+        console.log(results);
+        fetch("http://0.0.0.0:8080/submit-feedback", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                feedback: feedback,
+                results: results
+            })
+        })
+            .then(res => res.json())
+            .then(_ => {
+                document.getElementById('thanks-feedback').style.display = "block";
             });
     }
 </script>

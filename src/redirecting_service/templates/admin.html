@@ -46,6 +46,17 @@
     </div>
   </div>
 
+  <div class="input-group my-3">
+    <input type="text" class="form-control" placeholder="Image url, e.g. ghcr.io/pepijnk12/remla:inference-api-latest" id="image-url-input">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button"
+              onclick="deployImage(document.getElementById('image-url-input').value)">Deploy image
+      </button>
+    </div>
+  </div>
+  <div>
+    <h4 id="image-deployed">Image deployment triggered</h4>
+  </div>
   <h5 class="mt-3">Logs</h5>
   <div id="model-logs">
 
@@ -54,10 +65,23 @@
 </div>
 <script>
 
+    function deployImage(imageUrl){
+        fetch("http://localhost:8080/deploy-image", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({imageUrl: imageUrl})
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                document.getElementById('image-deployed').style.display = "block";
+            });
+    }
+
     function hideAllStatusElements(){
         document.getElementById('loading-model-selected').style.display = "none";
         document.getElementById('success-model-selected').style.display = "none";
         document.getElementById('error-model-selected').style.display = "none";
+        document.getElementById('image-deployed').style.display = "none";
     }
 
 
@@ -71,7 +95,7 @@
         })
             .then(res => res.json())
             .then(responseData => {
-                hideAllStatusElements()
+                hideAllStatusElements();
                 if (responseData.success){
                    document.getElementById('success-model-selected').style.display = "block";
                 } else {
@@ -108,8 +132,6 @@
             .then(responseData => {
                 if (responseData){
                     document.getElementById('model-logs').innerHTML = responseData.map(function(item) {
-                      item['bow_results'] = item['bow_results'].join(', ');
-                      item['tfidf_results'] = item['tfidf_results'].join(', ');
                       return objToString(item);
                     }).join("<br><br>");
                 }
