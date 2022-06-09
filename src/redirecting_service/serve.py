@@ -55,12 +55,11 @@ def predict():
     if not post:
         return jsonify(success=False)
 
-    # TODO change IP address to redirect to two different inference APIs
     # Redirect request to both inference APIs
-    resA = requests.post("http://0.0.0.0:8000/predict", json={
+    resA = requests.post("http://0.0.0.0:30001/predict", json={
         "post": post
     })
-    resB = requests.post("http://0.0.0.0:8000/predict", json={
+    resB = requests.post("http://0.0.0.0:30002/predict", json={
         "post": post
     })
 
