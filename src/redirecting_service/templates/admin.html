@@ -88,7 +88,7 @@
     function setActiveModel(value) {
         document.getElementById('loading-model-selected').style.display = "block";
 
-        fetch("http://localhost:8080/set-active-model", {
+        fetch("http://localhost:30000/set-active-model", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({model: value})
@@ -105,7 +105,7 @@
     }
 
     function getActiveModel() {
-        fetch("http://0.0.0.0:8080/active-model", {
+        fetch("http://0.0.0.0:30000/active-model", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })
@@ -124,7 +124,7 @@
     }
 
     function getLogs() {
-        fetch("http://0.0.0.0:8080/logs", {
+        fetch("http://0.0.0.0:30000/logs", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })

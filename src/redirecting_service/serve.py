@@ -9,15 +9,20 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app)
+<<<<<<< HEAD
 
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
+=======
+>>>>>>> main
 
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
 state = {
     "active_model": "A",
 }
 
 posts = []
+
 
 @app.route('/', methods=['GET'])
 def index_page():
@@ -26,6 +31,10 @@ def index_page():
     """
     return render_template("index.html")
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 @app.route('/admin', methods=['GET'])
 def admin_view():
     """
@@ -33,6 +42,7 @@ def admin_view():
     """
     return render_template("admin.html")
 
+<<<<<<< HEAD
 
 @app.route('/deploy-image', methods=['POST'])
 def deploy_image():
@@ -43,6 +53,8 @@ def deploy_image():
     # input_data = request.get_json(force=True)
     # image_url = input_data.get('imageUrl')
     return jsonify(success=True)
+=======
+>>>>>>> main
 
 
 @app.route('/predict', methods=['POST'])
@@ -57,6 +69,7 @@ def predict():
 
     # TODO change IP address to redirect to two different inference APIs
     # Redirect request to both inference APIs
+<<<<<<< HEAD
     resA = requests.post("http://0.0.0.0:8000/predict", json={
         "post": post
     })
@@ -87,6 +100,17 @@ def metrics_inactive_model():
     Returns inactive model metrics
     """
     return str(0.05)
+=======
+    if state['active_model'] == 'A':
+        res = requests.post("http://0.0.0.0:30001/predict", json={
+            "post": post
+        })
+    else:
+        res = requests.post("http://0.0.0.0:30002/predict", json={
+            "post": post
+        })
+>>>>>>> main
+
 
 
 @app.route('/active-model', methods=['GET'])
@@ -97,6 +121,7 @@ def get_active_model():
     return jsonify({
         "activeModel": state['active_model']
     })
+
 
 @app.route('/logs', methods=['GET'])
 def get_posts():
@@ -116,6 +141,7 @@ def submit_feedback():
     results['user_tags'] = user_tags
     posts.append(results)
     return jsonify(success=True)
+
 
 @app.route('/set-active-model', methods=['POST'])
 def set_active_model():
