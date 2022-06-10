@@ -94,7 +94,9 @@ disable=raw-checker-failed,
         consider-using-f-string,
         unspecified-encoding,
         no-member,
-        similarities
+        similarities,
+        global-statement,
+        invalid-name
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -585,3 +587,4 @@ min-public-methods=2
 # "BaseException, Exception".
 overgeneral-exceptions=BaseException,
                        Exception
+
