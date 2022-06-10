@@ -9,6 +9,8 @@ To initialize the cluster we have to:
 1. Build dockerfile within src/redirecting_service and name this build: remla-redirecting-service:latest (later we will replace with online build version but for testing purposes this is easier).
 2. Run `kubectl apply -f .\k8s-local-deployment.yaml`
 
+3. api exposed on: http://localhost:30001/
+
 Raw input for postman post: /deploy-image
 {
     "version": "1.4.0"
