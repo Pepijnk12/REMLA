@@ -1,6 +1,28 @@
 # Multilabel classification on Stack Overflow tags
 Predict tags for posts from StackOverflow with multilabel classification approach.
 
+
+## Kubernetes instruction 
+
+To initialize the cluster we have to: 
+
+1. Build dockerfile within src/redirecting_service and name this build: remla-redirecting-service:latest (later we will replace with online build version but for testing purposes this is easier).
+2. Run `kubectl apply -f .\k8s-local-deployment.yaml`
+
+Raw input for postman post: /deploy-image
+{
+    "version": "1.4.0"
+}
+
+
+To remove old deployments: `kubectl delete all --all` 
+
+
+
+
+
+
+
 ## Dataset
 - Dataset of post titles from StackOverflow
 

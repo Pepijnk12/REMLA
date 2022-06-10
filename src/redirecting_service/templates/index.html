@@ -49,7 +49,7 @@
         document.getElementById('loading').style.display = "block";
         document.getElementById('result').style.display = "none";
 
-        fetch("http://0.0.0.0:30000/predict", {
+        fetch("http://0.0.0.0:30001/predict", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({post: title})
