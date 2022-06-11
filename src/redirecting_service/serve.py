@@ -31,7 +31,7 @@ def pod_name_to_model_version(pod_name: str):
     version_list = pod_name[len(MODEL_PREFIX):].split("-")[:3]
     return '.'.join(version_list)
 
-countRequests = Counter()
+countRequests = Counter('amount_requests', "The amount of prediction that have been made to the server")
 hA = Histogram('classes_predicted_A', 'The amount of times each class has been predicted by A')
 hB = Histogram('classes_predicted_B', 'The amount of times each class has been predicted by B')
 amountRequests = Counter('requests_total', 'Amount of requests for predictions')
