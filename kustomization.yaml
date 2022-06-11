@@ -1,0 +1,5 @@
+secretGenerator:
+- name: remla-repo-pass
+  literals:
+  - username=MarkovChainmail
+  - password=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

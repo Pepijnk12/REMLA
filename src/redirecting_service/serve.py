@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
 from kubernetes import client, config
+from prometheus_client import Histogram, generate_latest, Counter
 
 config.load_incluster_config()
 
@@ -29,6 +30,12 @@ def pod_name_to_model_version(pod_name: str):
     """e.g stackoverflow-tag-pred-model-1-4-0-74cbcb4b6-68gbg"""
     version_list = pod_name[len(MODEL_PREFIX):].split("-")[:3]
     return '.'.join(version_list)
+
+countRequests = Counter()
+hA = Histogram('classes_predicted_A', 'The amount of times each class has been predicted by A')
+hB = Histogram('classes_predicted_B', 'The amount of times each class has been predicted by B')
+amountRequests = Counter('requests_total', 'Amount of requests for predictions')
+logs = []
 
 
 @app.route('/', methods=['GET'])
@@ -180,6 +187,28 @@ def predict():
                 }
             })
 
+    # jsonA = resA.json()
+    # jsonB = resB.json()
+    #
+    # for tag in jsonA['result']:
+    #     hA.observe(tag)
+    #
+    # for tag in jsonB['result']:
+    #     hB.observe(tag)
+    #
+    # for res_json in [jsonA, jsonB]:
+    #     res_json['timestamp'] = str(datetime.datetime.now())
+    #     logs.append(res_json)
+    #
+    # if state['active_model'] == 'A':
+    #     res = resA
+    # else:
+    #     res = resB
+    #
+    # amountRequests.inc()
+    #
+    # return res.json()
+
     active_model_res['timestamp'] = str(datetime.datetime.now())
     return active_model_res
 
@@ -257,14 +286,7 @@ def metrics():
     """
     Metrics
     """
-    response = "# HELP num_pred Number of request predictions\n"
-    response = response.join("# TYPE num_pred counter\n")
-    response = response.join("num_pred ").join(str(len(logs))).join("\n\n")
-
-    # TODO accuracy of models
-
-    response.mimetype = "text/plain"
-    return response
+    return generate_latest()
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)

@@ -3,7 +3,6 @@ Load preprocessed data and generate model
 """
 import os
 from joblib import load, dump
-from numpy import average
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
