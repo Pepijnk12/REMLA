@@ -38,10 +38,6 @@ amountRequests = Counter('amount_requests', 'Amount of requests for predictions'
 f1A = Gauge('f1_A', 'Cumulative f1 score of A')
 f1B = Gauge('f1_B', 'Cumulative f1 score of B')
 
-predictionsA = {}
-predictionsB = {}
-feedback = {}
-
 logs = []
 
 id = 0
