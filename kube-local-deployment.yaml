@@ -20,6 +20,8 @@ spec:
         image: ghcr.io/pepijnk12/remla:inference-api-latest
         ports:
         - containerPort: 8000
+      imagePullSecrets:
+        - name: remla-repo-pass
 ---
 apiVersion: v1
 kind: Service
@@ -56,6 +58,8 @@ spec:
         image: ghcr.io/pepijnk12/remla:inference-api-latest
         ports:
         - containerPort: 8001
+      imagePullSecrets:
+        - name: remla-repo-pass-bmm4h58f7d
 ---
 apiVersion: v1
 kind: Service
@@ -100,6 +104,8 @@ spec:
               configMapKeyRef:
                 name: my-config
                 key: model.host
+      imagePullSecrets:
+        - name: remla-repo-pass
 ---
 apiVersion: v1
 kind: Service
@@ -123,7 +129,7 @@ metadata:
   labels:
     # Use helm to install kube-prometheus-stack with name promstack (which contains grafana already)
     release: promstack # prometheus
-spec: # sepcify which services to monitor
+spec: # specify which services to monitor
   selector:
     matchLabels:
       app: stackoverflow-tag-pred-web-svc

@@ -283,17 +283,17 @@ def submit_feedback():
     results['user_tags'] = user_tags
     posts.append(results)
 
-    requestId = input_data.get('requestId')
+    id = input_data.get('id')
 
     # Get f1 scores of both inference APIs
     resA = requests.post("http://0.0.0.0:30001/feedback", json={
             "feedback": user_tags,
-            "id": requestId
+            "id": id
         })
 
     resB = requests.post("http://0.0.0.0:30002/feedback", json={
             "feedback": user_tags,
-            "id": requestId
+            "id": id
         })
 
     jsonA = resA.json()
