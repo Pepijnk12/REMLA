@@ -5,10 +5,14 @@ from flask import Flask, jsonify, request
 from flasgger import Swagger
 from joblib import load
 from flask_cors import CORS
+from sklearn.metrics import f1_score
 
 app = Flask(__name__)
 swagger = Swagger(app)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
+
+predictions = {}
+feedbacks = {}
 
 
 @app.route('/', methods=['GET'])
@@ -70,6 +74,31 @@ def predict():
         "post": post,
         "tfidf_results": tfidf_tags[0],
         "bow_results": bow_tags[0]
+    }
+
+    return jsonify(res)
+
+@app.route('/feedback', methods=['POST'])
+def calculate_f1():
+    """
+    Calculate how accurate the predictions were
+    """
+    input_data = request.get_json(force=True)
+    feedback = input_data.get('feedback')
+    id = input_data.get('id')
+
+    mlb = load('models/mlb.joblib')
+    feedback_mlb = mlb.transform(feedback)
+    feedbacks[id] = feedback_mlb
+
+    # Get list of predictions and ground truth
+    Y = [(b, feedbacks[a]) for a, b in predictions.items() if a in feedbacks]
+    predicted, groundtruth = map(list, zip(*Y))
+
+    f1 = f1_score(groundtruth, predicted, average='weighted')
+
+    res = {
+        "score": f1,
     }
 
     return jsonify(res)

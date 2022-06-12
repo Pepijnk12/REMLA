@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
 from kubernetes import client, config
-from prometheus_client import Histogram, generate_latest, Counter
+from prometheus_client import generate_latest, Counter, Gauge
 
 config.load_incluster_config()
 
@@ -31,12 +31,20 @@ def pod_name_to_model_version(pod_name: str):
     version_list = pod_name[len(MODEL_PREFIX):].split("-")[:3]
     return '.'.join(version_list)
 
-countRequests = Counter('amount_requests', "The amount of prediction that have been made to the server")
-hA = Histogram('classes_predicted_A', 'The amount of times each class has been predicted by A')
-hB = Histogram('classes_predicted_B', 'The amount of times each class has been predicted by B')
-amountRequests = Counter('requests_total', 'Amount of requests for predictions')
+classesA = Counter('classes_predicted_A', 'The amount of times each class has been predicted by A', ['class'])
+classesB = Counter('classes_predicted_B', 'The amount of times each class has been predicted by B', ['class'])
+amountRequests = Counter('amount_requests', 'Amount of requests for predictions')
+
+f1A = Gauge('f1_A', 'Cumulative f1 score of A')
+f1B = Gauge('f1_B', 'Cumulative f1 score of B')
+
+predictionsA = {}
+predictionsB = {}
+feedback = {}
+
 logs = []
 
+id = 0
 
 @app.route('/', methods=['GET'])
 def index_page():
@@ -187,27 +195,43 @@ def predict():
                 }
             })
 
+    # # Redirect request to both inference APIs
+    # resA = requests.post("http://0.0.0.0:30001/predict", json={
+    #         "post": post
+    #     })
+    #
+    # resB = requests.post("http://0.0.0.0:30002/predict", json={
+    #         "post": post
+    #     })
     # jsonA = resA.json()
     # jsonB = resB.json()
     #
+    # # Increase the counts for each tag per label
     # for tag in jsonA['result']:
-    #     hA.observe(tag)
-    #
+    #     classesA.labels(tag).inc()
     # for tag in jsonB['result']:
-    #     hB.observe(tag)
+    #     classesB.labels(tag.inc())
+    #
+    # # Increase the request count
+    # amountRequests.inc()
+    #
+    # global id
+    # id += 1
     #
     # for res_json in [jsonA, jsonB]:
     #     res_json['timestamp'] = str(datetime.datetime.now())
     #     logs.append(res_json)
     #
-    # if state['active_model'] == 'A':
-    #     res = resA
-    # else:
-    #     res = resB
     #
-    # amountRequests.inc()
+    # res = {
+    #     "A": resA.json()['result'],
+    #     "B": resB.json()['result'],
+    #     "active_model": state["active_model"],
+    #     "requestId": id
+    # }
     #
-    # return res.json()
+    # res['timestamp'] = str(datetime.datetime.now())
+    # return res
 
     active_model_res['timestamp'] = str(datetime.datetime.now())
     return active_model_res
@@ -262,6 +286,25 @@ def submit_feedback():
     results = input_data.get('results')
     results['user_tags'] = user_tags
     posts.append(results)
+
+    requestId = input_data.get('requestId')
+
+    # Get f1 scores of both inference APIs
+    resA = requests.post("http://0.0.0.0:30001/feedback", json={
+            "feedback": user_tags,
+            "id": requestId
+        })
+
+    resB = requests.post("http://0.0.0.0:30002/feedback", json={
+            "feedback": user_tags,
+            "id": requestId
+        })
+
+    jsonA = resA.json()
+    jsonB = resB.json()
+
+    f1A.set(jsonA['score'])
+    f1B.set(jsonB['score'])
     return jsonify(success=True)
 
 
