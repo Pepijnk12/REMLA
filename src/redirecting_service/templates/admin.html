@@ -66,10 +66,10 @@
 <script>
 
     function deployImage(imageUrl){
-        fetch("http://localhost:8080/deploy-image", {
+        fetch("http://localhost:30001/deploy-image", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({imageUrl: imageUrl})
+            body: JSON.stringify({version: imageUrl})
         })
             .then(res => res.json())
             .then(responseData => {
@@ -124,7 +124,7 @@
     }
 
     function getLogs() {
-        fetch("http://0.0.0.0:30000/logs", {
+        fetch("http://localhost:30001/logs", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })
