@@ -58,8 +58,7 @@
             .then(res => res.json())
             .then(responseData => {
                 results = responseData;
-                let activeModel = responseData['active_model']
-                document.getElementById('result-tags').innerHTML = responseData[activeModel].join(', ');
+                document.getElementById('result-tags').innerHTML = responseData['result'].join(', ');
                 document.getElementById('result').style.display = "block";
                 document.getElementById('loading').style.display = "none";
             });
@@ -67,7 +66,7 @@
 
     function sendFeedback(feedback) {
         console.log(results);
-        fetch("http://0.0.0.0:8080/submit-feedback", {
+        fetch("http://localhost:30001/submit-feedback", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -80,6 +79,17 @@
                 document.getElementById('thanks-feedback').style.display = "block";
             });
     }
+    function getActiveModel() {
+        fetch("http://localhost:30001/active-model", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                document.getElementById('version-input').value = responseData.activeModel;
+            });
+    }
+    getActiveModel()
 </script>
 </body>
 </html>
