@@ -6,11 +6,10 @@ import requests
 from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
-
 from kubernetes import client, config
-import yaml
-config.load_incluster_config()
+from utils import pod_name_to_model_version
 
+config.load_incluster_config()
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -18,10 +17,11 @@ swagger = Swagger(app)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
 state = {
-    "active_model": "A",
+    "active_model": "None",
 }
 
 posts = []
+models = []
 
 
 @app.route('/', methods=['GET'])
@@ -30,6 +30,7 @@ def index_page():
     Render index page
     """
     return render_template("index.html")
+
 
 @app.route('/admin', methods=['GET'])
 def admin_view():
@@ -50,12 +51,12 @@ def deploy_image():
     print(input_data)
 
     version = input_data.get('version')
-    
+
     version_safe = version.replace(".", "-")
 
     container = client.V1Container(
-        name="stackoverflow-tag-pred-model-"+version_safe,
-        image="ghcr.io/pepijnk12/remla:inference-api-"+version,
+        name="stackoverflow-tag-pred-model-" + version_safe,
+        image="ghcr.io/pepijnk12/remla:inference-api-" + version,
         ports=[client.V1ContainerPort(container_port=8000)],
         resources=client.V1ResourceRequirements(
             requests={"cpu": "100m", "memory": "200Mi"},
@@ -73,19 +74,19 @@ def deploy_image():
     spec = client.V1DeploymentSpec(
         replicas=1, template=template, selector={
             "matchLabels":
-            {"app": "stackoverflow-tag-pred-model"}})
+                {"app": "stackoverflow-tag-pred-model"}})
 
     # Instantiate the deployment object
     deployment = client.V1Deployment(
         api_version="apps/v1",
         kind="Deployment",
-        metadata=client.V1ObjectMeta(name="stackoverflow-tag-pred-model-"+version_safe),
+        metadata=client.V1ObjectMeta(name="stackoverflow-tag-pred-model-" + version_safe),
         spec=spec,
     )
 
     k8s_apps_v1 = client.AppsV1Api()
     resp = k8s_apps_v1.create_namespaced_deployment(
-    body=deployment, namespace="default"
+        body=deployment, namespace="default"
     )
 
     k8s_apps_v1 = client.CoreV1Api()
@@ -93,7 +94,7 @@ def deploy_image():
         api_version="v1",
         kind="Service",
         metadata=client.V1ObjectMeta(
-            name="stackoverflow-tag-pred-model-"+version_safe+"-service"
+            name="stackoverflow-tag-pred-model-" + version_safe + "-service"
         ),
         spec=client.V1ServiceSpec(
             selector={"app": "stackoverflow-tag-pred-model"},
@@ -105,36 +106,33 @@ def deploy_image():
     )
     # Creation of the Deployment in specified namespace
     # (Can replace "default" with a namespace you may have created)
-    k8s_apps_v1.create_namespaced_service(namespace="default", body=body)    
+    k8s_apps_v1.create_namespaced_service(namespace="default", body=body)
 
     # replace container-name-replace-me in k8s deployment
     # Read in the file
-       
 
     # Replace the target string
-    #filedata = filedata.replace('container-name-replace-me', 'stackoverflow-tag-pred-model-1')
+    # filedata = filedata.replace('container-name-replace-me', 'stackoverflow-tag-pred-model-1')
 
-    #dep = yaml.load(file,Loader=yaml.FullLoader)
- 
+    # dep = yaml.load(file,Loader=yaml.FullLoader)
 
     # TODO do something with image url
     # input_data = request.get_json(force=True)
     # image_url = input_data.get('imageUrl')
+
+    # TODO if the model has been deployed before do not deploy
     return jsonify(success=True)
 
-@app.route('/get-active-models', methods=['GET'])
-def get_active_models():
 
+@app.route('/get-all-models', methods=['GET'])
+def get_all_models():
     v1 = client.CoreV1Api()
     print("Listing pods with their IPs:")
     ret = v1.list_pod_for_all_namespaces(watch=False)
-    models = []
     for i in ret.items:
         if i.metadata.name.startswith("stackoverflow-tag-pred-model"):
-            models.append(i.metadata.name)
-
+            models.append(pod_name_to_model_version(i.metadata.name))
     return jsonify(models=models)
-
 
 
 @app.route('/predict', methods=['POST'])
@@ -142,30 +140,39 @@ def predict():
     """
     Redirect prediction call to the inference APIs
     """
+    # @todo do sth with the stored shadow model responses
+    active_model_res = {}
+    shadow_models_res = {}
+
     input_data = request.get_json(force=True)
     post = input_data.get('post')
-    version = input_data.get('version')
-    safe_version = version.replace(".", "-")
 
     if not post:
         return jsonify(success=False)
 
-    # Redirect request to both inference APIs
-    resA = requests.post("http://stackoverflow-tag-pred-model-"+safe_version+"-service:8000/predict", json={
-        "post": post
-    })
-    #resB = requests.post("http://0.0.0.0:30002/predict", json={
-    #    "post": post
-    #})
+    if state['active_model'] == 'None':
+        return jsonify(success=False, message="No active model")
 
-    res = {
-        "A": resA.json()['result'],
-        #"B": resB.json()['result'],
-        "active_model": state["active_model"]
-    }
+    for model in models:
+        safe_version = model.replace('.', '-')
+        response = requests.post("http://stackoverflow-tag-pred-model-" + safe_version + "-service:8000/predict", json={
+            "post": post
+        })
+        if model == state['active_model']:
+            active_model_res = {
+                'result': response.json()['result'],
+                'active-model': model
+            }
+        else:
+            shadow_models_res.update({
+                model: {
+                    'result': response.json()['result']
+                }
+            })
 
-    res['timestamp'] = str(datetime.datetime.now())
-    return res
+    active_model_res['timestamp'] = str(datetime.datetime.now())
+    return active_model_res
+
 
 @app.route('/metrics-active-model', methods=['GET'])
 def metrics_active_model():
@@ -200,6 +207,7 @@ def get_posts():
     """
     return jsonify(posts)
 
+
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
     """
@@ -223,7 +231,7 @@ def set_active_model():
 
     input_data = request.get_json(force=True)
     model = input_data.get('model')
-    if model in ['A', 'B']:
+    if model in models:
         state['active_model'] = model
         return jsonify(success=True)
     return jsonify(success=False)
