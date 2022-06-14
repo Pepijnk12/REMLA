@@ -21,7 +21,7 @@ state = {
 }
 
 posts = []
-models = []
+models = set()
 
 
 @app.route('/', methods=['GET'])
@@ -131,8 +131,8 @@ def get_all_models():
     ret = v1.list_pod_for_all_namespaces(watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("stackoverflow-tag-pred-model"):
-            models.append(pod_name_to_model_version(i.metadata.name))
-    return jsonify(models=models)
+            models.add(pod_name_to_model_version(i.metadata.name))
+    return jsonify(models=list(models))
 
 
 @app.route('/predict', methods=['POST'])
