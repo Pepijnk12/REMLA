@@ -12,6 +12,16 @@ To initialize the cluster we have to:
 4. Forward the port to the host: `kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80 `
 5. redirecting service exposed on: http://remla.localdev.me
 
+
+Minikube 
+1. `minikube addons enable ingress`
+2. `kubectl apply -f .\k8s-local-deployment.yaml`
+3. Forward the port to the host: `kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80 `
+
+
+
+
+
 Cleanup: To remove old model deployments: `kubectl delete all --all` 
 
 
