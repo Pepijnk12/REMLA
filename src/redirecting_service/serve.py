@@ -92,7 +92,7 @@ def deploy_image():
     )
 
     k8s_apps_v1 = client.AppsV1Api()
-    resp = k8s_apps_v1.create_namespaced_deployment(
+    k8s_apps_v1.create_namespaced_deployment(
         body=deployment, namespace="default"
     )
 
@@ -133,6 +133,9 @@ def deploy_image():
 
 @app.route('/get-all-models', methods=['GET'])
 def get_all_models():
+    """
+    Get all model services running in the cluster
+    """
     v1 = client.CoreV1Api()
     print("Listing pods with their IPs:")
     ret = v1.list_pod_for_all_namespaces(watch=False)
