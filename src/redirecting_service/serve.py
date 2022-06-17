@@ -14,7 +14,7 @@ config.load_incluster_config()
 app = Flask(__name__)
 swagger = Swagger(app)
 
-cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
+cors = CORS(app, resources={r"/*": {"origins": "http://remla.localdev.me:*"}})
 
 state = {
     "active_model": "None",
