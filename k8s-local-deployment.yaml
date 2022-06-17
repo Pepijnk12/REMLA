@@ -40,7 +40,7 @@ spec:
         app: remla-interface
     spec:
       containers:
-        - image: remla-redirecting-service:latest #image: ghcr.io/pepijnk12/remla:redirecting-service-latest 
+        - image: ghcr.io/pepijnk12/remla:redirecting-service-latest 
           imagePullPolicy: IfNotPresent
           ports:
            - containerPort: 8080          
