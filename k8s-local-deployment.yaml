@@ -1,0 +1,85 @@
+# Cluster Role and Bindiong for interacting with the k8s api. 
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pods-action
+rules:
+- apiGroups: ["","apps"]
+  resources: ["pods","deployments","services"]
+  verbs: ["list", "get", "watch", "create", "update", "patch", "delete", "deletecollection"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pods-action
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: pods-action
+  apiGroup: rbac.authorization.k8s.io
+---
+#redirecting service 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: remla-interface
+  name: remla-interface
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remla-interface
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: remla-interface
+    spec:
+      containers:
+        - image: ghcr.io/pepijnk12/remla:redirecting-service-latest 
+          imagePullPolicy: IfNotPresent
+          ports:
+           - containerPort: 8080          
+          name: remla-interface
+          resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: remla-interface
+  name: remla-interface-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30001
+  selector:
+    app: remla-interface
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: ingress-service
+ annotations: 
+   kubernetes.io/ingress.class: nginx
+   nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+ rules:
+ - host: remla.localdev.me
+   http:
+    paths:
+     - path: /?(.*)
+       pathType: Prefix
+       backend:
+        service:
+          name: remla-interface-service
+          port:
+            number: 8080   

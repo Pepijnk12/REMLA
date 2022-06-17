@@ -11,9 +11,10 @@
 <div class="container pt-3">
   <div class="input-group mb-3">
     <input type="text" class="form-control" placeholder="Stackoverflow title" id="post-input">
+    <input type="text" class="form-control" placeholder="Model version" id="version-input">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button"
-              onclick="predict(document.getElementById('post-input').value)">Predict
+              onclick="predict(document.getElementById('post-input').value,document.getElementById('version-input').value )">Predict
       </button>
     </div>
   </div>
@@ -45,20 +46,19 @@
     document.getElementById('thanks-feedback').style.display = "none";
 
     let results;
-    function predict(title) {
+    function predict(title,version) {
         document.getElementById('loading').style.display = "block";
         document.getElementById('result').style.display = "none";
 
-        fetch("http://0.0.0.0:30000/predict", {
+        fetch("http://localhost:30001/predict", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({post: title})
+            body: JSON.stringify({post: title,version: version})
         })
             .then(res => res.json())
             .then(responseData => {
                 results = responseData;
-                let activeModel = responseData['active_model']
-                document.getElementById('result-tags').innerHTML = responseData[activeModel].join(', ');
+                document.getElementById('result-tags').innerHTML = responseData['result'].join(', ');
                 document.getElementById('result').style.display = "block";
                 document.getElementById('loading').style.display = "none";
             });
@@ -66,7 +66,7 @@
 
     function sendFeedback(feedback) {
         console.log(results);
-        fetch("http://0.0.0.0:8080/submit-feedback", {
+        fetch("http://localhost:30001/submit-feedback", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -79,6 +79,17 @@
                 document.getElementById('thanks-feedback').style.display = "block";
             });
     }
+    function getActiveModel() {
+        fetch("http://localhost:30001/active-model", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                document.getElementById('version-input').value = responseData.activeModel;
+            });
+    }
+    getActiveModel()
 </script>
 </body>
 </html>

@@ -18,16 +18,15 @@
 
 <body>
 <div class="container pt-3">
-  <label>Active model:</label>
+  <label>Active model:&nbsp;</label><label id="active-model"></label>
   <div class="flex-horizontal">
     <div>
       <select id="model-selector" class="form-control model-select">
-        <option value="A">Model A</option>
-        <option value="B">Model B</option>
+        <option>No models loaded</option>>
       </select>
     </div>
     <button class="btn btn-outline-secondary ml-2" type="button"
-      onclick="setActiveModel(document.getElementById('model-selector').value)">Save
+      onclick="setActiveModel(document.getElementById('model-selector').value)">Set Active
     </button>
     <div class="ml-2">
       <div id="loading-model-selected" class="spinner-border" role="status">
@@ -47,7 +46,7 @@
   </div>
 
   <div class="input-group my-3">
-    <input type="text" class="form-control" placeholder="Image url, e.g. ghcr.io/pepijnk12/remla:inference-api-latest" id="image-url-input">
+    <input type="text" class="form-control" placeholder="Model version, e.g. 1.4.0" id="image-url-input">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button"
               onclick="deployImage(document.getElementById('image-url-input').value)">Deploy image
@@ -64,12 +63,12 @@
 
 </div>
 <script>
-
-    function deployImage(imageUrl){
-        fetch("http://localhost:8080/deploy-image", {
+    // I notice it's actually using version string here. If you want to add url implementation the api need to be changed directly
+    function deployImage(versionString){
+        fetch("http://localhost:30001/deploy-image", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({imageUrl: imageUrl})
+            body: JSON.stringify({version: versionString})
         })
             .then(res => res.json())
             .then(responseData => {
@@ -85,19 +84,20 @@
     }
 
 
-    function setActiveModel(value) {
+    function setActiveModel(model_version) {
         document.getElementById('loading-model-selected').style.display = "block";
 
-        fetch("http://localhost:30000/set-active-model", {
+        fetch("http://localhost:30001/set-active-model", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({model: value})
+            body: JSON.stringify({model: model_version})
         })
             .then(res => res.json())
             .then(responseData => {
                 hideAllStatusElements();
                 if (responseData.success){
                    document.getElementById('success-model-selected').style.display = "block";
+                   document.getElementById('active-model').textContent = model_version
                 } else {
                    document.getElementById('error-model-selected').style.display = "block";
                 }
@@ -105,13 +105,14 @@
     }
 
     function getActiveModel() {
-        fetch("http://0.0.0.0:30000/active-model", {
+        fetch("http://localhost:30001/active-model", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })
             .then(res => res.json())
             .then(responseData => {
                 document.getElementById('model-selector').value = responseData.activeModel;
+                document.getElementById('active-model').textContent = responseData.activeModel
             });
     }
 
@@ -124,7 +125,7 @@
     }
 
     function getLogs() {
-        fetch("http://0.0.0.0:30000/logs", {
+        fetch("http://localhost:30001/logs", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         })
@@ -137,8 +138,28 @@
                 }
             });
     }
+
+    function loadModels() {
+        fetch("http://localhost:30001/get-all-models", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => res.json())
+            .then(responseData => {
+                if (responseData){
+                    let optionList = "";
+                    const optionArray = responseData.models
+                    for (let i=0; i< optionArray.length;i++){
+                       optionList += "<option value='"+optionArray[i]+"'>"+optionArray[i]+"</option>"
+                    }
+                    document.getElementById('model-selector').innerHTML = optionList;
+                }
+            });
+    }
+
     getLogs()
     hideAllStatusElements()
+    loadModels()
     getActiveModel()
 </script>
 <script>

@@ -1,6 +1,30 @@
 # Multilabel classification on Stack Overflow tags
 Predict tags for posts from StackOverflow with multilabel classification approach.
 
+
+## Kubernetes instruction 
+
+To initialize the cluster we have to: 
+
+1. Build dockerfile within src/redirecting_service and name this build: remla-redirecting-service:latest (later we will replace with online build version but for testing purposes this is easier).
+2. Run `kubectl apply -f .\k8s-local-ingress-controller.yaml` building the ingress controller
+3. Run `kubectl apply -f .\k8s-local-deployment.yaml`
+4. Forward the port to the host: `kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80 `
+5. redirecting service exposed on: http://remla.localdev.me
+
+
+Minikube 
+1. `minikube addons enable ingress`
+2. `kubectl apply -f .\k8s-local-deployment.yaml`
+3. Forward the port to the host: `kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80 `
+
+
+
+
+
+Cleanup: To remove old model deployments: `kubectl delete all --all` 
+
+
 ## Dataset
 - Dataset of post titles from StackOverflow
 
