@@ -27,7 +27,7 @@ jobs:
       - name: Build and push
         run: |
           IMG=ghcr.io/pepijnk12/remla
-          cd src/redirecting-service
+          cd src/redirecting_service
           docker build \
             -f Dockerfile \
             -t ${IMG}:redirecting-service-latest \
