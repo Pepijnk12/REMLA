@@ -10,6 +10,11 @@ app = Flask(__name__)
 swagger = Swagger(app)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:*"}})
 
+cache = {
+    'number_of_predicted_tags_so_far_tfidf': 0,
+    'number_of_predicted_tags_so_far_bow': 0
+}
+
 
 @app.route('/', methods=['GET'])
 def running():
@@ -64,6 +69,11 @@ def predict():
     tfidf_tags = mlb.inverse_transform(tfidf_prediction)
     bow_tags = mlb.inverse_transform(bow_prediction)
 
+    cache['number_of_predicted_tags_so_far_tfidf'] = cache.get('number_of_predicted_tags_so_far_tfidf', 0) + len(
+        tfidf_tags[0])
+    cache['number_of_predicted_tags_so_far_bow'] = cache.get('number_of_predicted_tags_so_far_bow', 0) + len(
+        bow_tags[0])
+
     res = {
         "result": tfidf_tags[0],
         "classifier": "tfifd",
@@ -73,6 +83,20 @@ def predict():
     }
 
     return jsonify(res)
+
+
+@app.route('/metrics', methods=['GET'])
+def number_of_predicted_tags():
+    """
+    Return the metrics string in the format of prometheus exporter
+    This metrics note the number of the tags predicted by this model version
+    """
+    metrics = ''
+    metrics += '# HELP number_of_predicted_tags The number of predicted tags\n'
+    metrics += '# TYPE number_of_predicted_tags counter\n'
+    metrics += f"number_of_predicted_tags{{method='bow'}} {cache['number_of_predicted_tags_so_far_bow']}\n"
+    metrics += f"number_of_predicted_tags{{method='tfidf'}} {cache['number_of_predicted_tags_so_far_tfidf']}\n"
+    return metrics
 
 
 if __name__ == '__main__':
