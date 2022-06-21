@@ -22,8 +22,18 @@ Minikube
 
 
 
-Cleanup: To remove old model deployments: `kubectl delete all --all` 
+Cleanup: To remove old model deployments: `kubectl delete all --all`
 
+## Instruction of using the app
+- Go to `http://remla.localdev.me/admin` Input a version of a model you want to deploy. Version should be >= 1.6.1
+- Wait until the model service deploys to the cluster successfully (Better manually check)
+- Refresh the page. The dropdown should contain a list of model. If there is only one model, the model gets active 
+automatically. The active model is the one in production. The rest models are shadow models.
+- Select a model you want to release in the dropdown and press `Set Active`
+- Go to `http://remla.localdev.me`. Input description and press predict to get some tag recommendation!
+- On the given result. You can write your tag improvement feedback to the provided input field.
+- Go to `http://remla.localdev.me/prometheus` to check current metrics. Model metrics could be found by filtering with 
+'model' in status -> targets.
 
 ## Dataset
 - Dataset of post titles from StackOverflow
