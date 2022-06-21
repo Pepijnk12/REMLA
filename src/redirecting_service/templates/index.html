@@ -9,12 +9,37 @@
 
 <body>
 <div class="container pt-3">
+
+  <div class="d-flex">
+    <div class="p-2 flex-shrink-1">
+      <img src="./assets/undraw_online_test_re_kyfx.svg" alt="heading" width="130"/>
+    </div>
+    <div class="p-2  w-100">
+      <h5 class="text-center"> <b>CS4295</b> Release Engineering for Machine Learning Applications (REMLA 2021 - 2022) </h5>
+      <h1 class="text-center"> Stack overflow tag predictor</h1>
+      <ul class="list-inline text-center">      
+        <li class="list-inline-item">Keon Chen 5511526 | </li>
+        <li class="list-inline-item">Budi Han 4389336 | </li>
+        <li class="list-inline-item">Pascal Hildebrand 4353765 | </li>
+        <li class="list-inline-item">Quinten van Eijs 4513681 | </li>
+        <li class="list-inline-item">Pepijn Klop 4684311</li>
+      </ul>
+    </div>
+  </div>
   <div class="input-group mb-3">
     <input type="text" class="form-control" placeholder="Stackoverflow title" id="post-input">
-    <input type="text" class="form-control" placeholder="Model version" id="version-input">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button"
-              onclick="predict(document.getElementById('post-input').value,document.getElementById('version-input').value )">Predict
+              onclick="predict(document.getElementById('post-input').value )">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list-search" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="15" cy="15" r="4" />
+                <path d="M18.5 18.5l2.5 2.5" />
+                <path d="M4 6h16" />
+                <path d="M4 12h4" />
+                <path d="M4 18h4" />
+              </svg>
+              Predict
       </button>
     </div>
   </div>
@@ -85,9 +110,6 @@
             headers: {'Content-Type': 'application/json'},
         })
             .then(res => res.json())
-            .then(responseData => {
-                document.getElementById('version-input').value = responseData.activeModel;
-            });
     }
     getActiveModel()
 </script>

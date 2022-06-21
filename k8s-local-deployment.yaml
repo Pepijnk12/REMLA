@@ -1,3 +1,120 @@
+# cluster role for prometheus
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - services
+  - endpoints
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+  - configmaps
+  verbs: ["get"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+
+#In addition to ClusterRole , we need to create a ServiceAccount for Prometheus to represent its identity in the cluster.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+
+#Finally, we need to bind the ServiceAccount and ClusterRole using the ClusterRoleBinding resource. The ClusterRoleBinding allows associating a list of users, groups, or service accounts with a specific role.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: default
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: default
+data:
+  prometheus.yml: "global:\r\n  scrape_interval: 15s # By default, scrape targets every
+    15seconds. # Attach these labels to any time series or alerts when #communicating
+    with external systems (federation, remote storage, #Alertmanager).\r\n  external_labels:\r\n
+    \   monitor: 'codelab-monitor'\r\n# Scraping Prometheus itself\r\nscrape_configs:\r\n-
+    job_name: 'prometheus'\r\n  scrape_interval: 5s\r\n  static_configs:\r\n  - targets:
+    ['localhost:9090']\r\n- job_name: 'kubernetes-pods'\r\n  kubernetes_sd_configs:\r\n
+    \ - role: endpoints\r\n  relabel_configs:\r\n  - action: labelmap\r\n    regex:
+    __meta_kubernetes_service_label_(.+)\r\n  - source_labels: [__meta_kubernetes_namespace]\r\n
+    \   action: replace\r\n    target_label: kubernetes_namespace\r\n  - source_labels:
+    [__meta_kubernetes_service_name]\r\n    action: replace\r\n    target_label: kubernetes_name "
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus-cont
+        image: prom/prometheus
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus/prometheus.yml
+          subPath: prometheus.yml
+        ports:
+        - containerPort: 9090
+        args: 
+         - --web.enable-lifecycle
+         - --config.file=/etc/prometheus/prometheus.yml
+         - --web.route-prefix=/
+         - --web.external-url=http://remla.localdev.me:8080/prometheus 
+        resources:
+         limits:
+           memory: 512Mi
+           cpu: "1"
+         requests:
+           memory: 256Mi
+           cpu: "0.2"        
+      volumes:
+      - name: config-volume
+        configMap:
+          name: prometheus-config
+      serviceAccountName: prometheus
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-service
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - name: promui
+    nodePort: 30900
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+  type: NodePort
+
+---
+
 # Cluster Role and Bindiong for interacting with the k8s api. 
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -40,7 +157,7 @@ spec:
         app: remla-interface
     spec:
       containers:
-        - image: ghcr.io/pepijnk12/remla:redirecting-service-latest 
+        - image: remla-redirecting-service:latest
           imagePullPolicy: IfNotPresent
           ports:
            - containerPort: 8080          
@@ -83,3 +200,10 @@ spec:
           name: remla-interface-service
           port:
             number: 8080   
+     - path: /prometheus/?(.*)
+       pathType: Prefix
+       backend:
+        service:
+          name: prometheus-service
+          port:
+            number: 9090   
