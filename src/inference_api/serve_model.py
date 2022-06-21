@@ -94,8 +94,8 @@ def number_of_predicted_tags():
     metrics = ''
     metrics += '# HELP number_of_predicted_tags The number of predicted tags\n'
     metrics += '# TYPE number_of_predicted_tags counter\n'
-    metrics += f"number_of_predicted_tags{{method='bow'}} {cache['number_of_predicted_tags_so_far_bow']}\n"
-    metrics += f"number_of_predicted_tags{{method='tfidf'}} {cache['number_of_predicted_tags_so_far_tfidf']}\n"
+    metrics += f'number_of_predicted_tags{{method="bow"}} {cache["number_of_predicted_tags_so_far_bow"]}\n'
+    metrics += f'number_of_predicted_tags{{method="tfidf"}} {cache["number_of_predicted_tags_so_far_tfidf"]}\n'
     return metrics
 
 
