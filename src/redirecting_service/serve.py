@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, render_template
 from flasgger import Swagger
 from flask_cors import CORS
 from kubernetes import client, config
+from prometheus_client import generate_latest, Counter, Gauge
 
 config.load_incluster_config()
 
@@ -30,6 +31,16 @@ def pod_name_to_model_version(pod_name: str):
     version_list = pod_name[len(MODEL_PREFIX):].split("-")[:3]
     return '.'.join(version_list)
 
+classesA = Counter('classes_predicted_A', 'The amount of times each class has been predicted by A', ['class'])
+classesB = Counter('classes_predicted_B', 'The amount of times each class has been predicted by B', ['class'])
+amountRequests = Counter('amount_requests', 'Amount of requests for predictions')
+
+f1A = Gauge('f1_A', 'Cumulative f1 score of A')
+f1B = Gauge('f1_B', 'Cumulative f1 score of B')
+
+logs = []
+
+id = 0
 
 @app.route('/', methods=['GET'])
 def index_page():
@@ -180,6 +191,44 @@ def predict():
                 }
             })
 
+    # # Redirect request to both inference APIs
+    # resA = requests.post("http://0.0.0.0:30001/predict", json={
+    #         "post": post
+    #     })
+    #
+    # resB = requests.post("http://0.0.0.0:30002/predict", json={
+    #         "post": post
+    #     })
+    # jsonA = resA.json()
+    # jsonB = resB.json()
+    #
+    # # Increase the counts for each tag per label
+    # for tag in jsonA['result']:
+    #     classesA.labels(tag).inc()
+    # for tag in jsonB['result']:
+    #     classesB.labels(tag.inc())
+    #
+    # # Increase the request count
+    # amountRequests.inc()
+    #
+    # global id
+    # id += 1
+    #
+    # for res_json in [jsonA, jsonB]:
+    #     res_json['timestamp'] = str(datetime.datetime.now())
+    #     logs.append(res_json)
+    #
+    #
+    # res = {
+    #     "A": resA.json()['result'],
+    #     "B": resB.json()['result'],
+    #     "active_model": state["active_model"],
+    #     "requestId": id
+    # }
+    #
+    # res['timestamp'] = str(datetime.datetime.now())
+    # return res
+
     active_model_res['timestamp'] = str(datetime.datetime.now())
     return active_model_res
 
@@ -198,6 +247,11 @@ def metrics_inactive_model():
     Returns inactive model metrics
     """
     return str(0.05)
+    log_item = res.json()
+    log_item['timestamp'] = str(datetime.datetime.now())
+    logs.append(log_item)
+
+    return res.json()
 
 
 @app.route('/active-model', methods=['GET'])
@@ -228,6 +282,25 @@ def submit_feedback():
     results = input_data.get('results')
     results['user_tags'] = user_tags
     posts.append(results)
+
+    id = input_data.get('id')
+
+    # Get f1 scores of both inference APIs
+    resA = requests.post("http://0.0.0.0:30001/feedback", json={
+            "feedback": user_tags,
+            "id": id
+        })
+
+    resB = requests.post("http://0.0.0.0:30002/feedback", json={
+            "feedback": user_tags,
+            "id": id
+        })
+
+    jsonA = resA.json()
+    jsonB = resB.json()
+
+    f1A.set(jsonA['score'])
+    f1B.set(jsonB['score'])
     return jsonify(success=True)
 
 
@@ -246,6 +319,13 @@ def set_active_model():
         return jsonify(success=True)
     return jsonify(success=False)
 
+
+@app.route('/metrics', methods=['GET'])
+def metrics():
+    """
+    Metrics
+    """
+    return generate_latest()
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)

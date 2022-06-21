@@ -67,6 +67,20 @@ def print_evaluation_scores(y_val, predicted):
     print('Average precision score: ', average_precision_score(
         y_val, predicted, average='macro'))
 
+def get_evaluation_scores(y_val, predicted):
+    """
+    Return accuracy, F1, and average precision scores
+
+    Args:
+        y_val (dict): true values
+        predicted (dict): predicted values
+    """
+    acc = accuracy_score(y_val, predicted)
+    f1 = f1_score(y_val, predicted, average='weighted')
+    average_prec = average_precision_score(y_val, predicted, average='macro')
+
+    return acc, f1, average_prec
+
 
 def main():
     """

@@ -18,7 +18,7 @@
     <div class="p-2  w-100">
       <h5 class="text-center"> <b>CS4295</b> Release Engineering for Machine Learning Applications (REMLA 2021 - 2022) </h5>
       <h1 class="text-center"> Stack overflow tag predictor</h1>
-      <ul class="list-inline text-center">      
+      <ul class="list-inline text-center">
         <li class="list-inline-item">Keon Chen 5511526 | </li>
         <li class="list-inline-item">Budi Han 4389336 | </li>
         <li class="list-inline-item">Pascal Hildebrand 4353765 | </li>
@@ -85,6 +85,9 @@
             .then(responseData => {
                 results = responseData;
                 document.getElementById('result-tags').innerHTML = responseData['result'].join(', ');
+                let activeModel = responseData['active_model'];
+                let requestId = responseData['request_id'];
+                document.getElementById('result-tags').innerHTML = responseData[activeModel].join(', ');
                 document.getElementById('result').style.display = "block";
                 document.getElementById('loading').style.display = "none";
             });
@@ -97,7 +100,8 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 feedback: feedback,
-                results: results
+                results: results,
+                id: requestId
             })
         })
             .then(res => res.json())
